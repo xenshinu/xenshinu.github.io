@@ -234,7 +234,7 @@ The time consumption of original GEMM in Triton is `0.48ms`, while the indexed o
 
 If we take a look to the definition of `B = torch.randn((K, N))`, this is a row major matrix. However, selecting a part of columns from each row breaks the cacheline coalescing, as a result, the latency of memory loading is even more severe.
 
-> TODO: add a illustration diagram
+![image](/assets/images/blogs/2024-04-24-triton_gather_scatter/row_col_major.png)
 
 Obviously, we need to change `B` and `C` to **<u>column major</u>** matrices to make it more efficient.
 
