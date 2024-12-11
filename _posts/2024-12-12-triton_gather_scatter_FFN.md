@@ -1,7 +1,7 @@
 ---
 layout: single
 title:  "Efficient Gather-and-scatter Feed-forward Network Kernel with Triton"
-date:   2024-12-12
+date:   2024-12-10
 author_profile: true
 comments: true
 tags: [CUDA, Triton, GEMM, Pytorch, Feed-forward Network]
