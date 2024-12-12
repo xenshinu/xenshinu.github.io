@@ -7,9 +7,11 @@ comments: true
 tags: [CUDA, Triton, GEMM, Pytorch, Feed-forward Network, Structured Sparsity]
 ---
 
-In our recent work [Learn to be efficient: Build structured sparsity in large language models](https://arxiv.org/pdf/2402.06126), we propose a novel method to build structured sparsity in large language models. Through jointly training of router and LLM, we achieves a better trade-off between sparsity and accuracy. However, the current Pytorch doesn't provide an efficient implementation of gather-and-scatter feed-forward network. To translate the theoretical FLOPs reduction into real speedup, we need to implement a kernel by ourselves.
+In our recent work [Learn to be efficient: Build structured sparsity in large language models](https://arxiv.org/pdf/2402.06126), we propose a novel method to build structured sparsity in large language models. Through jointly training of router and LLM, we achieves a better trade-off between sparsity and accuracy. 
 
-This post is the continuation of [Efficient Gather-and-scatter Matrix Multiplication Kernel with Triton](https://xenshinu.github.io/triton_gather_scatter/). We will implement an efficient gather-and-scatter feed-forward network kernel with Triton.
+Unfortunately, the current Pytorch doesn't provide an efficient implementation of sparse feed-forward network. To translate the theoretical FLOPs reduction into real speedup, we need to implement a kernel by ourselves.
+
+This post is the continuation of [Efficient Gather-and-scatter Matrix Multiplication Kernel with Triton](https://xenshinu.github.io/triton_gather_scatter/). We will implement an efficient gather-and-scatter feed-forward network kernel with Triton. Click [here](#final-implementation) to jump to the final implementation code. 
 
 ## Introduction
 
@@ -44,9 +46,9 @@ Basically, the implementation of mapping down includes two steps for each thread
 
 I know using `tl.atomic_add` sounds like a bad idea, but as far as we tested, it didn't become a bottleneck. My guess is that the accumulators are short enought to be kept in the L2 cache, and it doesn't actually read and write to the global memory frequently. 
 
-Also, because the conflict of atomic operation is inter-threadblock, and the GPU will schedule other threadblocks if the current one is pending, the latency is perfectly hidden.
+Also, because the conflict of atomic operation is inter-threadblock, and GPU will schedule other threadblocks if the current one is pending, the latency is perfectly hidden.
 
-What's more, because now every threadblock only need one element from the output of upper mapping step, we can completely fuse the three steps without any write-back to the global memory.
+What's more, because now every threadblock only need one element from the output of upper mapping step, we can completely fuse the three steps without any write-back to the global memory before we get the final result.
 
 Here is the illustration of the whole process from a threadblock's perspective:
 ![image](/assets/images/blogs/2024-12-12-triton_gather_scatter_FFN/gather_scatter_FFN_pipeline.png)
@@ -155,6 +157,7 @@ def indexed_ffn_fused_kernel(
 ```
 
 We profiled on a single RTX 3090Ti, which has very limited memory bandwidth (~1TB/s) compared with HBM GPUs. The results shows that we achieve linear speedup with the increasing of sparsity (i.e. the portion of neurons that are not activated).
+
 ![image](/assets/images/blogs/2024-12-12-triton_gather_scatter_FFN/ffn_speedup.png)
 
 For more details, please refer to our [paper](https://arxiv.org/pdf/2402.06126).
