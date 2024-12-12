@@ -64,7 +64,7 @@ Below is the final implementation of the gather-and-scatter feed-forward network
 @triton.jit
 def indexed_ffn_fused_kernel(
         # Pointers to matrices
-        a_ptr, b_ptr, d_ptr, e_ptr,
+        a_ptr, b_ptr, d_ptr, e_ptr, # e is the accumulators in global memory
         l_ptr,
         # Matrix dimensions
         # ideal a (M, K), b (K, L), c (M, L), d (L, K), index (L)
@@ -134,7 +134,8 @@ def indexed_ffn_fused_kernel(
         accumulator = leaky_relu(accumulator)
     
     c = accumulator.to(tl.float32)
-    
+    # no need to write back to the global memory
+
     # -----------------------------------------------------------
     # Iterate to compute a block of subE
     # We put E block into a `[BLOCK_SIZE_M, BLOCK_SIZE_N]` block
@@ -146,11 +147,14 @@ def indexed_ffn_fused_kernel(
     offs_em = (pid_m * BLOCK_SIZE_M + tl.arange(0, BLOCK_SIZE_M))
     offs_dn = (pid_n * BLOCK_SIZE_N + tl.arange(0, BLOCK_SIZE_N))
     for k in range(0, tl.cdiv(K, BLOCK_SIZE_K)):
+        # boundary check
         d_mask = (offs_dn[:, None] < L) & (offs_k[None, :] < K - k * BLOCK_SIZE_K)
         d = tl.load(d_ptrs, mask=d_mask, other=0.0)
-        e = tl.dot(c, d)
+        e = tl.dot(c, d) # c is [BLOCK_SIZE_M, BLOCK_SIZE_N], d is [BLOCK_SIZE_N, BLOCK_SIZE_K]
         
+        # boundary check
         e_mask = (offs_em[:, None] < M) & (offs_k[None, :] < K - k * BLOCK_SIZE_K)
+        # add to the accumulators
         tl.atomic_add(e_ptrs, e, mask=e_mask)
         d_ptrs += BLOCK_SIZE_K * stride_dk
         e_ptrs += BLOCK_SIZE_K * stride_ak
