@@ -7,7 +7,7 @@ comments: true
 tags: [CUDA, Pytorch, Huggingface, CUDA Graph, LLM]
 ---
 
-This post is to log a minimum prototype of LLM inference with CUDA graph to eliminate bubbles between kernel launches. Click [here](#final-implementation) to jump to the final implementation code.
+This post is to log a minimum prototype of LLM inference with CUDA graph to eliminate bubbles between kernel launches. Click [here](#final-implementation) to jump to the final implementation code. 
 
 ## Intro
 

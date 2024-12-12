@@ -7,7 +7,7 @@ comments: true
 tags: [CUDA, Triton, GEMM, Pytorch]
 ---
 
-This post is to log my implementation of gather-and-scatter matrix multiplication operation with Triton. Click [here](#final-implementation) to jump to the final implementation code.
+This post is to log my implementation of gather-and-scatter matrix multiplication operation with Triton. Click [here](#final-implementation) to jump to the final implementation code. If you are interested in the further implementation of efficient FFN kernel, please refer to [this post](https://xenshinu.github.io/triton_gather_scatter_FFN/), where we provide implementation details of our paper [Learn to be efficient: Build structured sparsity in large language models](https://arxiv.org/pdf/2402.06126).
 
 ## Intro
 

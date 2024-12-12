@@ -4,8 +4,10 @@ title:  "Efficient Gather-and-scatter Feed-forward Network Kernel with Triton"
 date:   2024-12-12
 author_profile: true
 comments: true
-tags: [CUDA, Triton, GEMM, Pytorch, Feed-forward Network]
+tags: [CUDA, Triton, GEMM, Pytorch, Feed-forward Network, Structured Sparsity]
 ---
+
+In our recent work [Learn to be efficient: Build structured sparsity in large language models](https://arxiv.org/pdf/2402.06126), we propose a novel method to build structured sparsity in large language models. Through jointly training of router and LLM, we achieves a better trade-off between sparsity and accuracy. However, the current Pytorch doesn't provide an efficient implementation of gather-and-scatter feed-forward network. To translate the theoretical FLOPs reduction into real speedup, we need to implement a kernel by ourselves.
 
 This post is the continuation of [Efficient Gather-and-scatter Matrix Multiplication Kernel with Triton](https://xenshinu.github.io/triton_gather_scatter/). We will implement an efficient gather-and-scatter feed-forward network kernel with Triton.
 
@@ -13,28 +15,36 @@ This post is the continuation of [Efficient Gather-and-scatter Matrix Multiplica
 
 Feed-forward network normally consists of three operations:
 1. Linear transformation, mapping input to higher intermediate representation.
-2. Activation function, non-linear transformation.
+2. Activation function, and an optional element-wise multiplication (e.g. Llama).
 3. Linear transformation, mapping intermediate representation back to feature space.
 
-We've already implemented the first two operations in the previous [post]((https://xenshinu.github.io/triton_gather_scatter/)), where we solve the uncoalesced memory access problem by storing a column major matrix, however, the thing gets tricker for the third operation. 
+We've already implemented the first two operations in the previous [post]((https://xenshinu.github.io/triton_gather_scatter/)), where we solve the uncoalesced memory access problem by storing a column major matrix, however, the thing gets trickier for the third operation. 
 
 Here is a simple illustration of the FFN operation:
 ![image](/assets/images/blogs/2024-12-12-triton_gather_scatter_FFN/ffn_illustration.png)
 
-In matrix multiplication, we basically take each column of the weight matrix to multiply with the input, and then sum up the results. In the upper mapping step, we just select by columns, so the data we load is still a complete array. However, in the third operation, we need to select by rows, which breaks the coalesced memory access. Therefore, to achieve efficient sparse FFN, we also need to change the way we calculate the GEMM on mapping down step.
+In matrix multiplication, we take each column of the weight matrix to compute dot product with the input. In the upper mapping step (second step), the router selects by columns, so the data loaded during dot product is still a complete array. 
+
+However, in the third operation, we need to select by rows, which breaks the coalesced memory access. Therefore, to achieve efficient sparse FFN, we also need to change the way we calculate the GEMM on third step.
 
 ## Design
 
-Obviously, coalesced memory access is our first priority, so we need to load the weight row by row. But in that way, we cannot keep the accumulator inside one threadblock. Suppose the intermediate vector is in 1xN, instead of computing dot product between two vectors, 1xN and Nx1 across K threadblocks, now we are calculating the element-wise product between one element and a row of the weight matrix (1xK), which will output an array with the same length as a row (1xK). Then at the end of the calculation, we need to sum that array up to get the final result in 1xK. That means, the accumulators have to be in the global memory, and it might be accessed simultaneously by multiple threadblocks. 
+Obviously, coalesced memory access is our first priority, so we need to load the weight row by row. But in that way, we cannot keep the accumulator inside one threadblock. 
+
+Suppose the intermediate vector is in 1xN, instead of computing dot product between two vectors, 1xN and Nx1 across K threadblocks, now we are calculating the element-wise product between one element and a row of the weight matrix (1xK), which will output an array with the same length as a row (1xK). 
+
+Then, we need to add this array to a shared accumulators array in 1xK. That means, the accumulators have to be in the global memory, and it might be accessed simultaneously by multiple threadblocks. 
 
 Here is an illustration of how it works:
 ![image](/assets/images/blogs/2024-12-12-triton_gather_scatter_FFN/elementwise_mma.png)
 
-Now we need to mapping down in two steps for each threadblock:
+Basically, the implementation of mapping down includes two steps for each threadblock:
 1. Calculate the element-wise product between one element and a row of the weight matrix (1xK), which will output an array with the same length as a row (1xK).
 2. Add the array to the accumulators in global memory, and use `tl.atomic_add` to avoid race condition.
 
-I know using `tl.atomic_add` sounds like a bad idea, but as far as we tested, it didn't become a bottleneck. My guess is that the accumulators are short enought to keep them in the L2 cache, and it doesn't actually read and write to the global memory frequently.
+I know using `tl.atomic_add` sounds like a bad idea, but as far as we tested, it didn't become a bottleneck. My guess is that the accumulators are short enought to be kept in the L2 cache, and it doesn't actually read and write to the global memory frequently. 
+
+Also, because the conflict of atomic operation is inter-threadblock, and the GPU will schedule other threadblocks if the current one is pending, the latency is perfectly hidden.
 
 What's more, because now every threadblock only need one element from the output of upper mapping step, we can completely fuse the three steps without any write-back to the global memory.
 
@@ -144,3 +154,7 @@ def indexed_ffn_fused_kernel(
         e_ptrs += BLOCK_SIZE_K * stride_ak
 ```
 
+We profiled on a single RTX 3090Ti, which has very limited memory bandwidth (~1TB/s) compared with HBM GPUs. The results shows that we achieve linear speedup with the increasing of sparsity (i.e. the portion of neurons that are not activated).
+![image](/assets/images/blogs/2024-12-12-triton_gather_scatter_FFN/ffn_speedup.png)
+
+For more details, please refer to our [paper](https://arxiv.org/pdf/2402.06126).
