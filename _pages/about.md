@@ -12,10 +12,10 @@ My name is Xueshen Liu (刘学深). I am a 4th-year Ph.D. candidate in the Compu
 
 ### News
 
-- **Dec. 2025** – Delighted that [**RLBoost: Harvesting Preemptible Resources for Cost-Efficient Reinforcement Learning on LLMs**](https://arxiv.org/abs/2510.19225) was accepted to NSDI'26 — and wrapped up an amazing Student Researcher internship with the Systems Research group at Google. See you in Seattle!  
+- **Dec. 2025** – Delighted that [**RLBoost: Harvesting Preemptible Resources for Cost-Efficient Reinforcement Learning on LLMs**](https://arxiv.org/abs/2510.19225) was accepted to NSDI'26 — and wrapped up an amazing Student Researcher internship with the Systems Research \@ Google. See you in Seattle!  
 - **Jul. 2025** – Excited that [**Plato: Plan to Efficiently Decode for Large Language Model Inference**](https://arxiv.org/abs/2402.12280) will appear at COLM'25. ~~See you in Montreal!~~  
 - **May 2025** – [**Compute Or Load KV Cache? Why Not Both? (CAKE)**](https://arxiv.org/abs/2410.03065) is heading to ICML'25 — very happy to share our work on optimzation of long-context KV caches. ~~See you in Vancouver!~~  
-- **May 2025** - Excited to join the Systems Research at Google ([SRG](https://techsysinfra.google/research/)) as a Student Researcher in Seattle. I will be working on distributed RL frameworks for LLMs with Juncheng Gu and Arvind Krishnamurthy.
+- **May 2025** - Excited to join the Systems Research \@ Google ([SRG](https://techsysinfra.google/research/)) as a Student Researcher in Seattle. I will be working on distributed RL frameworks for LLMs with Juncheng Gu and Arvind Krishnamurthy.
 - **Dec. 2024** – Honored that [**Learn-To-be-Efficient (LTE): Build Structured Sparsity in Large Language Models**](https://arxiv.org/abs/2402.06126) was presented as a Spotlight at NeurIPS'24. See you in Vancouver!  
 - **Oct. 2024** – [**mm2-gb: GPU Accelerated Minimap2 for Long Read DNA Mapping**](https://www.biorxiv.org/content/10.1101/2024.03.23.586366v2.abstract) was selected as an Oral at ACM BCB'24 — thrilled to share our work with the computational biology community.  
 - **Sept. 2024** – Very happy to start as Graduate Student Instructor for CSE 589 (Advanced Computer Networks) at the University of Michigan.  
