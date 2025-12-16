@@ -43,7 +43,7 @@ author:
   avatar           : "/assets/images/bio-head.jpg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "CSE Ph.D at UMich"
   location         : "Ann Arbor, MI"
-  email            : "liuxs@umich.edu"
+  email            :
   uri              :
   bitbucket        :
   codepen          :
@@ -51,10 +51,10 @@ author:
   flickr           :
   facebook         :
   foursquare       :
-  github           : "xenshinu"
+  github           :
   google_plus      :
   keybase          :
-  instagram        : "xenshinu.liu"
+  instagram        :
   lastfm           :
   linkedin         : 
   pinterest        :
@@ -68,8 +68,17 @@ author:
   xing             :
   youtube          :
   links:
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: "mailto:liuxs@umich.edu"
+    - label: "Instagram"
+      icon: "fab fa-fw fa-instagram"
+      url: "https://instagram.com/xenshinu.liu"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/xenshinu"
     - label: "CV"
-      icon: "fas fa-file-pdf"
+      icon: "fas fa-fw fa-file-pdf"
       url: "/assets/pdf/Xueshen_CV.pdf"
 
 
