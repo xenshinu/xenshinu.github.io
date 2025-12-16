@@ -68,7 +68,7 @@ author:
   xing             :
   youtube          :
   links:
-    - label: "CV (PDF)"
+    - label: "CV"
       icon: "fas fa-file-pdf"
       url: "/assets/pdf/Xueshen_CV.pdf"
 
