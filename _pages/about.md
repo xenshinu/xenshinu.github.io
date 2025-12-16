@@ -8,7 +8,7 @@ comments: false
 author_profile: true
 ---
 
-My name is Xueshen Liu (刘学深). I am a 4th-year Ph.D. candidate in the Computer Science and Engineering Division at the University of Michigan, advised by Prof. [Z. Morley Mao](https://web.eecs.umich.edu/~zmao/). My research interests focus on **distributed systems** and **parallel computing**. Currently, I am exploring efficient solutions for training, inference, and reinforcement learning (RL) of **large language models (LLMs)** by designing **elastic** and **heterogeneous** systems.
+My name is Xueshen Liu (刘学深). I am a 4th-year Ph.D. candidate in the Computer Science and Engineering Division at the University of Michigan, advised by Prof. [Z. Morley Mao](https://web.eecs.umich.edu/~zmao/). My research interests focus on **distributed systems** and **parallel computing**. Currently, I am exploring efficient solutions for training, inference, and reinforcement learning (RL) of **large language models (LLMs)** by designing **elastic** and **heterogeneous** systems. 
 
 ### News
 
@@ -67,7 +67,7 @@ My name is Xueshen Liu (刘学深). I am a 4th-year Ph.D. candidate in the Compu
 - **Reviewer / PC member**: ICLR'26, ICLR'25, COLING'25  
 - **Invited talk**: "Scalable & Latency-tolerant Edge/Cloud Computing via Deep Factor Graph" (Aug. 2024)  
 - **Invited talk**: "Minimap2-gigabases (mm2-gb)" at AMD HPC Apps Knowledge Sync (May 2024)  
-- **Awards**: 
+- **Awards**:
   - Roger King Scholarship, College of Engineering, University of Michigan (Aug. 2021)
   - Runner-up Team & Grand Prize, 18th Robomaster Final Competition (Aug. 2019)
 

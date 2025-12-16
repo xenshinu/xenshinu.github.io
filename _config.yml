@@ -67,6 +67,10 @@ author:
   weibo            :
   xing             :
   youtube          :
+  links:
+    - label: "CV (PDF)"
+      icon: "fas fa-file-pdf"
+      url: "/assets/pdf/Xueshen_CV.pdf"
 
 
 include:
