@@ -12,7 +12,9 @@ My name is Xueshen Liu (刘学深). I am a 4th-year Ph.D. candidate in the Compu
 
 ### News
 
-- **Dec. 2025** – Delighted that [**RLBoost: Harvesting Preemptible Resources for Cost-Efficient Reinforcement Learning on LLMs**](https://arxiv.org/abs/2510.19225) was accepted to NSDI'26 — and wrapped up an amazing Student Researcher internship with the Systems Research @ Google. See you in Seattle!  
+- **Apr. 2026** – Excited to share [**Foundry: Template-Based CUDA Graph Context Materialization for Fast LLM Serving Cold Start**](https://arxiv.org/abs/2604.06664) on arXiv — code is available [here](https://github.com/foundry-org/foundry).
+- **Feb. 2026** – Thrilled to share that I will be joining [Citadel Securities](https://www.citadelsecurities.com/) as a Quantitative Researcher Intern for summer 2026. See you in Miami!
+- **Dec. 2025** – Delighted that [**RLBoost: Harvesting Preemptible Resources for Cost-Efficient Reinforcement Learning on LLMs**](https://arxiv.org/abs/2510.19225) was accepted to NSDI'26 — and wrapped up an amazing Student Researcher internship with the Systems Research @ Google. See you in Renton!  
 - **Jul. 2025** – Excited that [**Plato: Plan to Efficiently Decode for Large Language Model Inference**](https://arxiv.org/abs/2402.12280) will appear at COLM'25. ~~See you in Montreal!~~  
 - **May 2025** – [**Compute Or Load KV Cache? Why Not Both? (CAKE)**](https://arxiv.org/abs/2410.03065) is heading to ICML'25 — very happy to share our work on optimzation of long-context KV caches. ~~See you in Vancouver!~~  
 - **May 2025** - Excited to join the Systems Research @ Google ([SRG](https://techsysinfra.google/research/)) as a Student Researcher in Seattle. I will be working on distributed RL frameworks for LLMs with Juncheng Gu and Arvind Krishnamurthy.
@@ -31,8 +33,8 @@ My name is Xueshen Liu (刘学深). I am a 4th-year Ph.D. candidate in the Compu
 
 ### Selected Projects & Publications
 
-- **GPU States Checkpointing for Distributed Elastic Serving Systems** (Ongoing, Sept. 2025 – Present)  
-  Saving selected ranges of CUDA states into an image to skip warmup during elastic serving.
+- [**Foundry: Template-Based CUDA Graph Context Materialization for Fast LLM Serving Cold Start**](https://arxiv.org/abs/2604.06664) (arXiv, Sept. 2025 – Apr. 2026)  
+  Persists CUDA graph topology and execution context offline, then reconstructs executable graphs online with negligible overhead to reduce LLM serving cold-start latency by up to 99%. Code available [here](https://github.com/foundry-org/foundry).
 - [**RLBoost: Harvesting Preemptible Resources for Cost-Efficient Reinforcement Learning on LLMs**](https://arxiv.org/abs/2510.19225) (NSDI'26, May 2025 – Dec. 2025)  
   Designed a rollout system that adaptively offloads LLM RL workloads to preemptible instances, achieving up to 49% cost reduction and improving utilization of fragmented cloud resources. Code available [here](https://github.com/Terra-Flux/PolyRL).
 - [**HeterMoE: Efficient Training of Mixture-of-Experts Models on Heterogeneous GPUs**](https://arxiv.org/abs/2504.03871) (In submission, Apr. 2024 – Apr. 2025)  
