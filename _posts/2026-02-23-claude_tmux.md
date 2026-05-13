@@ -12,7 +12,7 @@ I wanted a **YOLO sandbox** for Claude Code: isolated dependencies, optional CUD
 ## Prereqs
 
 - Docker installed
-- If you want GPU: Linux + NVIDIA drivers + NVIDIA Container Toolkit
+- If you want GPU: Linux + NVIDIA drivers + [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 - If you don’t have GPU access: drop `--gpus all` and use a non-CUDA base image (e.g. `ubuntu:24.04`)
 
 Quick GPU sanity check:
@@ -23,7 +23,7 @@ docker run --rm --gpus all nvcr.io/nvidia/cuda:12.8.0-base-ubuntu24.04 nvidia-sm
 
 ## 1) Docker image (CUDA + uv + Claude Code + tmux)
 
-This Dockerfile creates an `ubuntu` user, installs `tmux`, installs `uv` + Claude Code, and builds a Python venv (including CUDA PyTorch as an example).
+This Dockerfile reuses the base image’s `ubuntu` user if it already exists, otherwise creates it. It also gives that user passwordless sudo, installs `tmux`, installs `uv` + Claude Code, and builds a Python venv (including CUDA PyTorch as an example).
 
 ```dockerfile
 # CUDA dev image (includes compilers + headers). If you don’t need GPU, switch to e.g. ubuntu:24.04.
@@ -31,12 +31,6 @@ FROM nvcr.io/nvidia/cuda:12.8.0-cudnn-devel-ubuntu24.04
 
 SHELL ["/bin/bash", "-lc"]
 ENV DEBIAN_FRONTEND=noninteractive
-
-# Create a non-root user so the container behaves more like a real dev machine.
-# UID=1000 matches the common host user id (helps avoid permission pain on bind mounts).
-ARG USER=ubuntu
-ARG UID=1000
-RUN useradd -m -u "${UID}" -s /bin/bash "${USER}"
 
 # Minimal set of tools I tend to want in a sandbox: build tooling, git, tmux, etc.
 RUN apt-get update && \
@@ -47,8 +41,21 @@ RUN apt-get update && \
       nano \
       ninja-build \
       numactl \
+      sudo \
       tmux && \
     rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user so the container behaves more like a real dev machine.
+# UID=1000 matches the common host user id (helps avoid permission pain on bind mounts).
+# Some Ubuntu-based CUDA images already include an ubuntu user, so only create it if needed.
+ARG USER=ubuntu
+ARG UID=1000
+RUN if ! id -u "${USER}" >/dev/null 2>&1; then \
+      useradd -m -u "${UID}" -s /bin/bash "${USER}"; \
+    fi && \
+    usermod -aG sudo "${USER}" && \
+    echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/"${USER}" && \
+    chmod 0440 /etc/sudoers.d/"${USER}"
 
 USER ubuntu
 # Put the venv in $HOME and ensure both venv + uv are on PATH for interactive shells.
@@ -103,6 +110,9 @@ run() {
   docker run -dit \
     --name "${CONTAINER_NAME}" \
     --gpus all \
+    --privileged \
+    --cap-add=ALL \
+    --security-opt seccomp=unconfined \
     --shm-size=64g \
     -v "${HOST_DIR}:/workspace:rw" \
     -w /workspace \
