@@ -49,16 +49,17 @@ function timeFor(item: (typeof rows)[number]) {
 <section class="process-window smi-shell" data-process-window data-active-lane={defaultLane}>
   <div class="window-bar">
     <span>PROCESS / <span data-process-title>{laneTraces[0].title}</span></span>
-    <span><span data-process-count>{rows.filter((row) => row.lane === defaultLane).length}</span> workloads</span>
+    <span><span class="smi-count" data-process-count>{rows.filter((row) => row.lane === defaultLane).length}</span> workloads</span>
   </div>
   <div class="process-table" role="list">
-    <div class="process-head" aria-hidden="true">
-      <span>ID</span>
-      <span>TIME</span>
-      <span>WORKLOAD</span>
-    </div>
-    <div class="process-body">
-      {rows.map((item) => (
+    <div class="process-scroll">
+      <div class="process-head" aria-hidden="true">
+        <span>ID</span>
+        <span>WORKLOAD</span>
+        <span>TIME</span>
+      </div>
+      <div class="process-body">
+        {rows.map((item) => (
         <article
           class="process-row"
           role="listitem"
@@ -69,7 +70,6 @@ function timeFor(item: (typeof rows)[number]) {
         >
           <button class="process-row-toggle" type="button" aria-expanded="false" aria-controls={`process-detail-${item.id}`}>
             <span class="mono">{item.processId}</span>
-            <span class="duration">{timeFor(item)}</span>
             <span class="command">
               <LogoBadge badge={item.logo} compact />
               <span class="process-copy">
@@ -77,6 +77,7 @@ function timeFor(item: (typeof rows)[number]) {
                 <span>{briefFor(item.detail, item.label)}</span>
               </span>
             </span>
+            <span class="duration">{timeFor(item)}</span>
           </button>
           <div class="process-details" id={`process-detail-${item.id}`} hidden>
             <ul>
@@ -87,7 +88,8 @@ function timeFor(item: (typeof rows)[number]) {
             {item.link && <a href={item.link}>Open link</a>}
           </div>
         </article>
-      ))}
+        ))}
+      </div>
     </div>
   </div>
 </section>

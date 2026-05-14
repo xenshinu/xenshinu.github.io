@@ -79,15 +79,10 @@ GitHub Pages must be configured to use GitHub Actions as the publishing source.
 
 ## Next Steps from user
 
-- [x] Timeline panels always show trace up to today's month in the browser.
-- [x] Only show the latest 3 process rows in the process viewport; marker hover scrolls to the matching process row and highlights it.
-- [x] Hovering a process row highlights the matching trace and turning point.
-- [x] Use terminal-style colors instead of pure white/black, with a minimal palette.
-- [x] In compressed panel previews, event markers render as dots instead of rounded bars.
-- [x] Process entries omit end/acceptance rows and show numeric id, time, event name, and one-sentence brief; click unfolds one detail dropdown at a time.
-- [x] Acceptance and end markers have empty popover details.
-- [x] Timeline panels scroll horizontally when the SVG is wider than the viewport and default to the most recent section.
-- [x] Add responsive behavior for vertical screens and phone viewers.
-- [x] Keep marker popovers attached to the selected trace panel and clamp them inside that panel.
-- [x] Add legacy publication bullet details to the timeline process dropdowns and research page.
-- [x] Replace the lower home-page research cards with a Host Processes news list.
+- [x] When user click the preview trace panel, the page should scroll to the position where the process window is on the top
+- [x] In phone mode, the process window, the host processses and memory heap width doesn't match the other window, usually a bit wider
+- [x] In phone view, only the education proceses details is normal small size, the other (e.g. work) the drop down information get very big
+- [x] In phone view, the TIME and WORKLOAD column of processes window will overlap, there should be more space for them while the ID column takes too much space, the column names should also move with the horizontal scroll bar, otherwise the content is mismatch.
+- [x] Change the order of columns in processes window to ID, WORKLOAD, TIME
+- [x] Also skip the second left most time of the trace x-axis label if the first label is too close with the second
+- [x] For host processes, put type logo under the time instead of creating a new column

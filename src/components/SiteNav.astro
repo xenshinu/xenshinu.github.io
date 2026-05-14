@@ -1,6 +1,6 @@
 ---
 type Props = {
-  active?: "home" | "blog" | "library" | "research" | "links" | "tags";
+  active?: "home" | "blog" | "library" | "research" | "links" | "tags" | "rtx";
 };
 
 const { active = "home" } = Astro.props;
@@ -9,6 +9,7 @@ const links = [
   { id: "home", label: "HOME", href: "/" },
   { id: "blog", label: "BLOG", href: "/blog/" },
   { id: "research", label: "LIBRARY", href: "/research/" },
+  { id: "rtx", label: "RTX ON", href: "/rtx-on/" },
   { id: "links", label: "LINKS", href: "/links/" }
 ];
 const activeLink = links.find((link) => link.id === activeId) ?? links[0];

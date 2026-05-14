@@ -53,7 +53,7 @@ import { laneTraces } from "@data/timeline";
     if (newsId && options.scrollProcess !== false) revealProcessRow(newsId);
   }
 
-  function setSelectedLane(lane, title) {
+  function setSelectedLane(lane, title, options = {}) {
     root?.setAttribute("data-selected-lane", lane);
     root?.classList.add("is-focused");
 
@@ -93,6 +93,12 @@ import { laneTraces } from "@data/timeline";
 
     if (processTitle) processTitle.textContent = title;
     if (processCount) processCount.textContent = String(count);
+
+    if (options.scrollToProcess && processWindow) {
+      requestAnimationFrame(() => {
+        processWindow.scrollIntoView({ block: "start", behavior: "smooth" });
+      });
+    }
   }
 
   function clearActive() {
@@ -198,8 +204,8 @@ import { laneTraces } from "@data/timeline";
     const svgNs = "http://www.w3.org/2000/svg";
     const now = new Date();
     const todayMonth = now.getFullYear() * 12 + now.getMonth();
-    const padding = { top: 28, right: 26, bottom: 38, left: 54 };
-    const width = 780;
+    const padding = { top: 28, right: 30, bottom: 38, left: 60 };
+    const width = 1500;
     const height = 300;
     const plotWidth = width - padding.left - padding.right;
     const plotHeight = height - padding.top - padding.bottom;
@@ -271,13 +277,17 @@ import { laneTraces } from "@data/timeline";
       const firstYear = Math.ceil(startMonth / 12);
       const lastYear = Math.floor(endMonth / 12);
       const minCurrentLabelGap = 112;
+      const minStartLabelGap = 80;
       const tickMonths = Array.from(new Set([
         startMonth,
         ...Array.from({ length: Math.max(0, lastYear - firstYear + 1) }, (_, index) => (firstYear + index) * 12),
         endMonth
       ])).filter((month) => month >= startMonth && month <= endMonth);
+      const secondLeftMonth = tickMonths.find((month) => month > startMonth) ?? null;
       const shouldShowXLabel = (month) => {
         if (month === endMonth) return true;
+        if (month === startMonth) return true;
+        if (month === secondLeftMonth && xForMonth(month) - xForMonth(startMonth) < minStartLabelGap) return false;
         return xForMonth(endMonth) - xForMonth(month) >= minCurrentLabelGap;
       };
 
@@ -375,7 +385,7 @@ import { laneTraces } from "@data/timeline";
       const interactive = event.target instanceof Element ? event.target.closest("a, button") : null;
       if (!interactive) {
         hidePopovers();
-        setSelectedLane(panel.getAttribute("data-lane"), panel.getAttribute("data-lane-title"));
+        setSelectedLane(panel.getAttribute("data-lane"), panel.getAttribute("data-lane-title"), { scrollToProcess: true });
       }
     });
   });

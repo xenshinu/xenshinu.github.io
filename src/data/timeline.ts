@@ -28,10 +28,11 @@ export type LaneTrace = {
   events: LaneTraceEvent[];
 };
 
-function publicationRefs(id: string): Pick<LaneTraceEvent, "detail" | "details" | "link"> {
+function publicationRefs(id: string): Pick<LaneTraceEvent, "label" | "detail" | "details" | "link"> {
   const publication = publications.find((item) => item.id === id);
 
   return {
+    label: publication?.title ?? "",
     detail: publication?.summary ?? "",
     details: publication?.details,
     link: publication?.paper
@@ -232,7 +233,6 @@ export const laneTraces: LaneTrace[] = [
         id: "mm2gb-start",
         date: "2022-05",
         value: 28,
-        label: "mm2-gb",
         ...publicationRefs("mm2gb"),
         duration: "May 2022-Nov 2024",
         kind: "start",
@@ -242,7 +242,6 @@ export const laneTraces: LaneTrace[] = [
         id: "plato-start",
         date: "2024-02",
         value: 50,
-        label: "Plato",
         ...publicationRefs("plato"),
         duration: "Feb 2024-Aug 2025",
         kind: "start",
@@ -252,7 +251,6 @@ export const laneTraces: LaneTrace[] = [
         id: "lte-start",
         date: "2024-03",
         value: 72,
-        label: "LTE",
         ...publicationRefs("lte"),
         duration: "Mar 2024-Jan 2025",
         kind: "start",
@@ -263,7 +261,6 @@ export const laneTraces: LaneTrace[] = [
         id: "cake-start",
         date: "2024-10",
         value: 82,
-        label: "CAKE",
         ...publicationRefs("cake"),
         duration: "Oct 2024-Jun 2025",
         kind: "start",
@@ -276,7 +273,6 @@ export const laneTraces: LaneTrace[] = [
         id: "hetermoe-start",
         date: "2025-01",
         value: 76,
-        label: "HeterMoE",
         ...publicationRefs("hetermoe"),
         duration: "Jan 2025-present",
         kind: "start",
@@ -286,7 +282,6 @@ export const laneTraces: LaneTrace[] = [
         id: "rlboost-start",
         date: "2025-05",
         value: 88,
-        label: "RLBoost",
         ...publicationRefs("rlboost"),
         duration: "May 2025-Jan 2026",
         kind: "start",
@@ -300,7 +295,6 @@ export const laneTraces: LaneTrace[] = [
         id: "foundry-start",
         date: "2025-09",
         value: 96,
-        label: "Foundry",
         ...publicationRefs("foundry"),
         duration: "Sep 2025-present",
         kind: "start",

@@ -9,9 +9,9 @@ type Props = {
 
 const { trace } = Astro.props;
 
-const width = 780;
+const width = 1500;
 const height = 300;
-const padding = { top: 28, right: 26, bottom: 38, left: 54 };
+const padding = { top: 28, right: 30, bottom: 38, left: 60 };
 const plotWidth = width - padding.left - padding.right;
 const plotHeight = height - padding.top - padding.bottom;
 const events = [...trace.events].sort((a, b) => parseMonth(a.date) - parseMonth(b.date));
@@ -53,8 +53,8 @@ function markerToken(event: (typeof events)[number]) {
 }
 
 function markerWidth(token: string, markerOnly: boolean) {
-  const width = token.length * 7 + 14;
-  return clamp(width, markerOnly ? 18 : 22, 62);
+  const width = token.length * 9 + 16;
+  return clamp(width, markerOnly ? 24 : 28, 84);
 }
 
 function markerYFor(event: (typeof events)[number]) {
@@ -108,9 +108,13 @@ const tickMonths = Array.from(new Set([
   endMonth
 ])).filter((month) => month >= startMonth && month <= endMonth);
 const minCurrentLabelGap = 112;
+const minStartLabelGap = 80;
+const secondLeftMonth = tickMonths.find((month) => month > startMonth) ?? null;
 
 function shouldShowXLabel(month: number) {
   if (month === endMonth) return true;
+  if (month === startMonth) return true;
+  if (month === secondLeftMonth && xForMonth(month) - xForMonth(startMonth) < minStartLabelGap) return false;
   return xForMonth(endMonth) - xForMonth(month) >= minCurrentLabelGap;
 }
 
@@ -195,12 +199,12 @@ const chartData = {
             >
               <line class="marker-stem" x1="0" x2="0" y1="0" y2={markerStemFor(my)} stroke={trace.color} />
               {isEnd ? (
-                <circle class="marker-dot marker-end-dot" r="4.5" fill={trace.color} />
+                <circle class="marker-dot marker-end-dot" r="6" fill={trace.color} />
               ) : (
                 <>
-                  <circle class="preview-dot marker-dot" r="4.5" fill={trace.color} />
-                  <rect class="marker-dot marker-chip" x={(-tokenWidth / 2).toFixed(1)} y={isMarkerOnly ? "-8" : "-11"} width={tokenWidth.toFixed(1)} height={isMarkerOnly ? 16 : 22} rx={isMarkerOnly ? 8 : 11} fill={trace.color} />
-                  <text class="marker-text" text-anchor="middle" y={isMarkerOnly ? 3 : 4}>{token}</text>
+                  <circle class="preview-dot marker-dot" r="6" fill={trace.color} />
+                  <rect class="marker-dot marker-chip" x={(-tokenWidth / 2).toFixed(1)} y={isMarkerOnly ? "-10" : "-13"} width={tokenWidth.toFixed(1)} height={isMarkerOnly ? 20 : 26} rx={isMarkerOnly ? 10 : 13} fill={trace.color} />
+                  <text class="marker-text" text-anchor="middle" y={isMarkerOnly ? 4 : 5}>{token}</text>
                 </>
               )}
             </g>

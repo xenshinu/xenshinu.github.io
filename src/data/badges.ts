@@ -71,5 +71,5 @@ export const badges: Record<BadgeKey, Badge> = {
   plato: { key: "plato", label: "Plato", short: "Plato", tone: "blue" },
   cake: { key: "cake", label: "CAKE", short: "CAKE", tone: "gold" },
   lte: { key: "lte", label: "LTE", short: "LTE", tone: "orange" },
-  mm2gb: { key: "mm2gb", label: "mm2-gb", short: "MM2", tone: "green" }
+  mm2gb: { key: "mm2gb", label: "mm2-gb", short: "MM2-gb", tone: "green" }
 };

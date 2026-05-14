@@ -163,7 +163,6 @@ const hostProcesses = [
           <div class="host-process-head" aria-hidden="true">
             <span>PID</span>
             <span>TIME</span>
-            <span>TYPE</span>
             <span>COMMAND</span>
           </div>
           <div class="host-process-body">
@@ -171,8 +170,10 @@ const hostProcesses = [
               process.href ? (
                 <a class="host-process-row" href={process.href}>
                   <span class="mono">{process.pid}</span>
-                  <span>{process.time}</span>
-                  <span class="host-type" data-type={process.type} aria-label={hostProcessTypes[process.type].label}>{hostProcessTypes[process.type].token}</span>
+                  <span class="host-time">
+                    <span>{process.time}</span>
+                    <span class="host-type" data-type={process.type} aria-label={hostProcessTypes[process.type].label}>{hostProcessTypes[process.type].token}</span>
+                  </span>
                   <span>
                     <strong>{process.command}</strong>
                     <small>{process.detail}</small>
@@ -181,8 +182,10 @@ const hostProcesses = [
               ) : (
               <div class="host-process-row">
                 <span class="mono">{process.pid}</span>
-                <span>{process.time}</span>
-                <span class="host-type" data-type={process.type} aria-label={hostProcessTypes[process.type].label}>{hostProcessTypes[process.type].token}</span>
+                <span class="host-time">
+                  <span>{process.time}</span>
+                  <span class="host-type" data-type={process.type} aria-label={hostProcessTypes[process.type].label}>{hostProcessTypes[process.type].token}</span>
+                </span>
                 <span>
                   <strong>{process.command}</strong>
                   <small>{process.detail}</small>
