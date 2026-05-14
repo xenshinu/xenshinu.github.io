@@ -813,6 +813,7 @@ h1 {
 }
 
 .content-panel {
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
@@ -956,6 +957,7 @@ h1 {
 .publication-list {
   display: grid;
   gap: 10px;
+  min-width: 0;
 }
 
 .post-row,
@@ -970,6 +972,12 @@ h1 {
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr);
   gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.post-row > span {
+  min-width: 0;
 }
 
 .post-row:hover,
@@ -987,6 +995,7 @@ h1 {
 .publication-card h2 {
   font-size: 1.1rem;
   margin: 0 0 8px;
+  overflow-wrap: anywhere;
 }
 
 .post-summary,
@@ -995,6 +1004,7 @@ h1 {
 .markdown-body li {
   color: #c8c8c8;
   line-height: 1.68;
+  overflow-wrap: anywhere;
 }
 
 .publication-details {
@@ -1019,6 +1029,7 @@ h1 {
   color: var(--muted);
   font-family: var(--mono);
   font-size: 0.78rem;
+  overflow-wrap: anywhere;
 }
 
 .markdown-body {
@@ -1301,6 +1312,12 @@ h1 {
     color: #071007;
     background: var(--green);
   }
+
+  .post-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1382,9 +1399,6 @@ h1 {
     min-width: 960px;
   }
 
-  .post-row {
-    grid-template-columns: 1fr;
-  }
 }
 
 @keyframes panel-select {
