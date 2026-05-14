@@ -11,6 +11,7 @@ const links = [
   { id: "research", label: "LIBRARY", href: "/research/" },
   { id: "links", label: "LINKS", href: "/links/" }
 ];
+const activeLink = links.find((link) => link.id === activeId) ?? links[0];
 ---
 
 <nav class="top-nav" aria-label="site navigation">
@@ -20,4 +21,15 @@ const links = [
       <a href={link.href} class:list={[{ active: activeId === link.id }]}>{link.label}</a>
     ))}
   </div>
+  <details class="mobile-nav">
+    <summary>
+      <span>{activeLink.label}</span>
+      <span aria-hidden="true">v</span>
+    </summary>
+    <div class="mobile-nav-menu">
+      {links.map((link) => (
+        <a href={link.href} class:list={[{ active: activeId === link.id }]}>{link.label}</a>
+      ))}
+    </div>
+  </details>
 </nav>

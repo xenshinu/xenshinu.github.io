@@ -1,6 +1,8 @@
 ---
 import LogoBadge from "./LogoBadge.astro";
 import { profile } from "@data/profile";
+
+const announcement = "Open to full-time role in 2027!!!";
 ---
 
 <section class="smi-shell hero" aria-label="Xueshen-SMI status header">
@@ -41,6 +43,11 @@ import { profile } from "@data/profile";
     <p class="intro">
       {profile.intro}
     </p>
+
+    <aside class="smi-announcement" aria-label="announcement">
+      <span>IMPORTANT</span>
+      <strong>{announcement}</strong>
+    </aside>
 
     <div class="badge-line" aria-label="focus stack">
       {profile.focusBadges.map((badge) => <LogoBadge badge={badge} />)}
