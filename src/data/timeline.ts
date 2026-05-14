@@ -89,11 +89,11 @@ export const laneTraces: LaneTrace[] = [
       },
       {
         id: "umich-phd",
-        date: "2022-09",
+        date: "2022-08",
         value: 88,
         label: "University of Michigan Ph.D. CSE",
         detail: "Ph.D. in Computer Science and Engineering at the University of Michigan, advised by Prof. Z. Morley Mao.",
-        duration: "Sep 2022-present",
+        duration: "Aug 2022-present",
         kind: "education",
         logo: "umich"
       },
