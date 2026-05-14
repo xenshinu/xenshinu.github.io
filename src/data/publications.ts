@@ -15,6 +15,22 @@ export type Publication = {
 
 export const publications: Publication[] = [
   {
+    id: "drpt",
+    title: "Dr. Post-Training: A Data Regularization Perspective on LLM Post-Training",
+    authors: "P Hu, X Liu, ZM Mao, JW Ma",
+    venue: "In submission",
+    keywords: ["LLM Post-Training", "Data Regularization", "SFT", "RLHF", "RLVR"],
+    summary: "A data regularization framework that makes post-training data more effective with zero overheads.",
+    details: [
+      "Dr. Post-Training is a framework that treats general training data as a regularizer rather than a selection pool.",
+      "Across SFT, RLHF, and RLVR, we show faster convergence and stronger performance over SOTA data selection methods",
+      "Includes LLM training system optimizations with zero computation overhead compared with standard training."
+    ],
+    paper: "https://arxiv.org/abs/2605.07063",
+    code: "https://github.com/TRAIS-Lab/Dr.Post-Training",
+    badge: "drpt"
+  },
+  {
     id: "foundry",
     title: "Foundry: Template-Based CUDA Graph Context Materialization for Fast LLM Serving Cold Start",
     authors: "X Liu*, Y Wu*, Y Yao, D Zhuo, I Stoica, ZM Mao",

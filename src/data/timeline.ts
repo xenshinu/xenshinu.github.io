@@ -300,6 +300,15 @@ export const laneTraces: LaneTrace[] = [
         kind: "start",
         logo: "foundry"
       },
+      {
+        id: "drpt-start",
+        date: "2025-10",
+        value: 98,
+        ...publicationRefs("drpt"),
+        duration: "Oct 2025-present",
+        kind: "start",
+        logo: "drpt"
+      },
       { id: "rlboost-nsdi", date: "2025-12", value: 96, label: "RLBoost accepted to NSDI'26", detail: "", duration: "NSDI 2026", kind: "acceptance", logo: "nsdi", link: "https://arxiv.org/abs/2510.19225", trace: false },
       { id: "rlboost-end", date: "2026-01", value: 78, label: "RLBoost moved to background", detail: "Main RLBoost active project phase completed after NSDI acceptance.", duration: "May 2025-Jan 2026", kind: "end", logo: "rlboost" },
     ]

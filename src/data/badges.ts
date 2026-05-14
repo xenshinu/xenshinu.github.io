@@ -25,6 +25,7 @@ export type BadgeKey =
   | "bcb"
   | "arxiv"
   | "foundry"
+  | "drpt"
   | "rlboost"
   | "hetermoe"
   | "plato"
@@ -66,6 +67,7 @@ export const badges: Record<BadgeKey, Badge> = {
   bcb: { key: "bcb", label: "ACM BCB", short: "BCB", tone: "red" },
   arxiv: { key: "arxiv", label: "arXiv", short: "arXiv", tone: "red" },
   foundry: { key: "foundry", label: "Foundry", short: "Foundry", tone: "cyan" },
+  drpt: { key: "drpt", label: "Dr. Post-Training", short: "Dr.PT", tone: "green" },
   rlboost: { key: "rlboost", label: "RLBoost", short: "RLBoost", tone: "green" },
   hetermoe: { key: "hetermoe", label: "HeterMoE", short: "HeterMoE", tone: "purple" },
   plato: { key: "plato", label: "Plato", short: "Plato", tone: "blue" },
