@@ -45,7 +45,7 @@ export const laneTraces: LaneTrace[] = [
     title: "GPU0 Education",
     subtitle: "academic milestones",
     color: "#d8d8d8",
-    unit: "depth",
+    unit: "workload",
     events: [
       {
         id: "sjtu-start",
