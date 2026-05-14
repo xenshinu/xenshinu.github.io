@@ -19,7 +19,13 @@ function rawSummary(raw: string | undefined): string {
   const body = raw.replace(/^---[\s\S]*?---/, "").trim();
   const paragraph = body
     .split(/\n{2,}/)
-    .map((chunk) => chunk.replace(/[#>*_`\[\]()]/g, "").trim())
+    .map((chunk) => chunk
+      .replace(/!\[[^\]]*]\([^)]*\)/g, "")
+      .replace(/\[([^\]]+)]\([^)]*\)/g, "$1")
+      .replace(/https?:\/\/\S+/g, "")
+      .replace(/[#>*_`]/g, "")
+      .replace(/\s+/g, " ")
+      .trim())
     .find((chunk) => chunk.length > 60);
 
   return paragraph ? `${paragraph.slice(0, 180)}${paragraph.length > 180 ? "..." : ""}` : "";
