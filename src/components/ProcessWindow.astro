@@ -1,0 +1,49 @@
+---
+import LogoBadge from "./LogoBadge.astro";
+import { laneTraces } from "@data/timeline";
+import { formatMonth } from "@lib/date";
+
+const rows = laneTraces.flatMap((trace) =>
+  trace.events.map((event) => ({
+    ...event,
+    lane: trace.lane,
+    traceTitle: trace.title
+  }))
+).sort((a, b) => b.date.localeCompare(a.date));
+
+const defaultLane = laneTraces[0].lane;
+---
+
+<section class="process-window smi-shell" data-process-window data-active-lane={defaultLane}>
+  <div class="window-bar">
+    <span>PROCESS / <span data-process-title>{laneTraces[0].title}</span></span>
+    <span><span data-process-count>{rows.filter((row) => row.lane === defaultLane).length}</span> events</span>
+  </div>
+  <div class="process-table" role="list">
+    <div class="process-head" aria-hidden="true">
+      <span>DATE</span>
+      <span>DURATION</span>
+      <span>EVENT</span>
+    </div>
+    <div class="process-body">
+      {rows.map((item) => (
+        <a
+          class="process-row"
+          role="listitem"
+          href={item.link ?? `#${item.id}`}
+          data-news-id={item.id}
+          data-trace-id={`${item.lane}-trace`}
+          data-lane={item.lane}
+          hidden={item.lane !== defaultLane}
+        >
+          <span class="mono">{formatMonth(item.date)}</span>
+          <span class="duration">{item.duration ?? "event"}</span>
+          <span class="command">
+            <LogoBadge badge={item.logo} compact />
+            {item.label}
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

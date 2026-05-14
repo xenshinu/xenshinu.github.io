@@ -1,0 +1,22 @@
+---
+type Props = {
+  active?: "home" | "blog" | "library" | "links";
+};
+
+const { active = "home" } = Astro.props;
+const links = [
+  { id: "home", label: "XUESHEN-SMI", href: "/" },
+  { id: "blog", label: "BLOG", href: "/blog/" },
+  { id: "library", label: "LIBRARY", href: "/research/" },
+  { id: "links", label: "LINKS", href: "/links/" }
+];
+---
+
+<nav class="top-nav" aria-label="site navigation">
+  <a class="brand" href="/">xueshen@runtime:~$ xueshen-smi --verbose </a>
+  <div class="nav-links">
+    {links.map((link) => (
+      <a href={link.href} class:list={[{ active: active === link.id }]}>{link.label}</a>
+    ))}
+  </div>
+</nav>

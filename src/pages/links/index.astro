@@ -1,0 +1,24 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SiteNav from "@components/SiteNav.astro";
+import { profile } from "@data/profile";
+---
+
+<BaseLayout title="Links | Xueshen Liu">
+  <main class="page-shell">
+    <SiteNav active="links" />
+    <section class="smi-shell">
+      <div class="hero-topline">
+        <span>LINK-SMI</span>
+        <span>external handles</span>
+      </div>
+      <div class="smi-frame">
+        <p class="eyebrow">External Links</p>
+        <h1>Links</h1>
+        <div class="hero-actions">
+          {profile.links.map((link) => <a href={link.href}>{link.label}</a>)}
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

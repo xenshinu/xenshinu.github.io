@@ -1,0 +1,197 @@
+---
+import TracePanel from "./TracePanel.astro";
+import { laneTraces } from "@data/timeline";
+---
+
+<section class="trace-grid is-focused" data-trace-root data-selected-lane={laneTraces[0].lane}>
+  {laneTraces.map((trace) => (
+    <TracePanel trace={trace} />
+  ))}
+</section>
+
+<script>
+  // @ts-nocheck
+  const root = document.querySelector("[data-trace-root]");
+
+  function getProcessWindow() {
+    return document.querySelector("[data-process-window]");
+  }
+
+  function setActive(traceId, newsId) {
+    document.querySelectorAll(".trace-group[data-trace-id]").forEach((node) => {
+      const isActive = node.getAttribute("data-trace-id") === traceId;
+      node.classList.toggle("is-active", Boolean(traceId && isActive));
+      node.classList.toggle("is-muted", Boolean(traceId && !isActive));
+    });
+
+    document.querySelectorAll(".trace-marker[data-news-id], .process-row[data-news-id]").forEach((node) => {
+      const activeNews = newsId && node.getAttribute("data-news-id") === newsId;
+      node.classList.toggle("is-news-active", Boolean(activeNews));
+    });
+  }
+
+  function setSelectedLane(lane, title) {
+    root?.setAttribute("data-selected-lane", lane);
+    root?.classList.add("is-focused");
+
+    document.querySelectorAll("[data-panel]").forEach((panel) => {
+      const selected = panel.getAttribute("data-lane") === lane;
+      panel.classList.toggle("is-selected", selected);
+      panel.classList.toggle("is-compressed", !selected);
+      panel.classList.remove("is-activating");
+      if (selected) {
+        void panel.offsetWidth;
+        requestAnimationFrame(() => {
+          panel.classList.add("is-activating");
+          window.setTimeout(() => panel.classList.remove("is-activating"), 820);
+        });
+      }
+    });
+
+    let count = 0;
+    const processWindow = getProcessWindow();
+    const processTitle = processWindow?.querySelector("[data-process-title]");
+    const processCount = processWindow?.querySelector("[data-process-count]");
+
+    processWindow?.setAttribute("data-active-lane", lane);
+    processWindow?.querySelectorAll(".process-row").forEach((row) => {
+      const visible = row.getAttribute("data-lane") === lane;
+      row.hidden = !visible;
+      if (visible) count += 1;
+    });
+
+    if (processTitle) processTitle.textContent = title;
+    if (processCount) processCount.textContent = String(count);
+  }
+
+  function clearActive() {
+    document.querySelectorAll(".is-active, .is-muted, .is-news-active").forEach((node) => {
+      node.classList.remove("is-active", "is-muted", "is-news-active");
+    });
+  }
+
+  function hidePopovers() {
+    document.querySelectorAll("[data-marker-popover]").forEach((popover) => {
+      popover.hidden = true;
+    });
+  }
+
+  function showMarkerPopover(marker, event) {
+    const panel = marker.closest("[data-panel]");
+    const popover = panel?.querySelector("[data-marker-popover]");
+    const visual = panel?.querySelector(".panel-visual");
+    if (!panel || !popover || !visual) return;
+
+    hidePopovers();
+    popover.querySelector("[data-popover-date]").textContent = marker.getAttribute("data-marker-date") ?? "";
+    popover.querySelector("[data-popover-title]").textContent = marker.getAttribute("data-marker-title") ?? "";
+    popover.querySelector("[data-popover-detail]").textContent = marker.getAttribute("data-marker-detail") ?? "";
+
+    const link = popover.querySelector("[data-popover-link]");
+    const href = marker.getAttribute("data-marker-link");
+    if (href) {
+      link.hidden = false;
+      link.href = href;
+    } else {
+      link.hidden = true;
+    }
+
+    popover.style.left = "0px";
+    popover.style.top = "0px";
+    popover.style.visibility = "hidden";
+    popover.hidden = false;
+
+    const bounds = visual.getBoundingClientRect();
+    const anchor = marker.querySelector(".marker-dot") ?? marker;
+    const markerBounds = anchor.getBoundingClientRect();
+    const margin = 12;
+    const gap = 14;
+    const popoverWidth = popover.offsetWidth;
+    const popoverHeight = popover.offsetHeight;
+    const markerX = markerBounds.left + markerBounds.width / 2 - bounds.left;
+    const markerY = markerBounds.top + markerBounds.height / 2 - bounds.top;
+    const maxX = Math.max(margin, bounds.width - popoverWidth - margin);
+    const maxY = Math.max(margin, bounds.height - popoverHeight - margin);
+    let x = markerX + gap;
+    let y = markerY + gap;
+
+    if (x + popoverWidth > bounds.width - margin) x = markerX - popoverWidth - gap;
+    if (y + popoverHeight > bounds.height - margin) y = markerY - popoverHeight - gap;
+
+    x = Math.min(Math.max(x, margin), maxX);
+    y = Math.min(Math.max(y, margin), maxY);
+    popover.style.left = `${x}px`;
+    popover.style.top = `${y}px`;
+    popover.style.visibility = "";
+  }
+
+  const firstPanel = root?.querySelector("[data-panel]");
+  if (firstPanel) {
+    setSelectedLane(firstPanel.getAttribute("data-lane"), firstPanel.getAttribute("data-lane-title"));
+  }
+
+  root?.addEventListener("mouseover", (event) => {
+    const target = event.target instanceof Element ? event.target.closest("[data-trace-id], [data-news-id]") : null;
+    if (!target) return;
+    setActive(target.getAttribute("data-trace-id"), target.getAttribute("data-news-id"));
+  });
+
+  root?.addEventListener("mouseout", (event) => {
+    const related = event.relatedTarget instanceof Element ? event.relatedTarget.closest("[data-trace-root]") : null;
+    if (!related) clearActive();
+  });
+
+  document.addEventListener("mouseover", (event) => {
+    const target = event.target instanceof Element ? event.target.closest("[data-trace-id], [data-news-id]") : null;
+    if (!target?.closest("[data-process-window]")) return;
+    if (!target) return;
+    setActive(target.getAttribute("data-trace-id"), target.getAttribute("data-news-id"));
+  });
+
+  document.addEventListener("mouseout", (event) => {
+    const target = event.target instanceof Element ? event.target.closest("[data-process-window]") : null;
+    const related = event.relatedTarget instanceof Element ? event.relatedTarget.closest("[data-process-window]") : null;
+    if (target && !related) clearActive();
+  });
+
+  document.querySelectorAll(".trace-panel").forEach((panel) => {
+    panel.addEventListener("keydown", (event) => {
+      const marker = event.target instanceof Element ? event.target.closest("[data-marker]") : null;
+      if (!marker || (event.key !== "Enter" && event.key !== " ")) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      setActive(marker.getAttribute("data-trace-id"), marker.getAttribute("data-news-id"));
+      showMarkerPopover(marker, event);
+    });
+
+    panel.addEventListener("click", (event) => {
+      const marker = event.target instanceof Element ? event.target.closest("[data-marker]") : null;
+      const close = event.target instanceof Element ? event.target.closest("[data-popover-close]") : null;
+
+      if (close) {
+        hidePopovers();
+        event.stopPropagation();
+        return;
+      }
+
+      if (marker) {
+        event.preventDefault();
+        event.stopPropagation();
+        setActive(marker.getAttribute("data-trace-id"), marker.getAttribute("data-news-id"));
+        showMarkerPopover(marker, event);
+        return;
+      }
+
+      const interactive = event.target instanceof Element ? event.target.closest("a, button") : null;
+      if (!interactive) {
+        hidePopovers();
+        setSelectedLane(panel.getAttribute("data-lane"), panel.getAttribute("data-lane-title"));
+      }
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") hidePopovers();
+  });
+</script>

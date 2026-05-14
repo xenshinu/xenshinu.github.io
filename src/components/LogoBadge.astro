@@ -1,0 +1,21 @@
+---
+import { badges, type BadgeKey } from "@data/badges";
+
+type Props = {
+  badge?: BadgeKey;
+  label?: string;
+  compact?: boolean;
+};
+
+const { badge, label, compact = false } = Astro.props;
+const data = badge ? badges[badge] : undefined;
+const text = label ?? data?.label ?? "trace";
+const short = data?.short ?? text.slice(0, 4);
+const tone = data?.tone ?? "neutral";
+---
+
+<span class:list={["logo-badge", `tone-${tone}`, { compact }]} title={text}>
+  <span class="logo-mark">{short}</span>
+  {!compact && <span class="logo-label">{text}</span>}
+</span>
+

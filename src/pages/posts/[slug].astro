@@ -1,0 +1,35 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SiteNav from "@components/SiteNav.astro";
+import { getAllPosts, type PostEntry } from "@lib/posts";
+import { render } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post }
+  }));
+}
+
+type Props = {
+  post: PostEntry;
+};
+
+const { post } = Astro.props;
+const { Content } = await render(post.entry);
+---
+
+<BaseLayout title={`${post.title} | Xueshen Liu`}>
+  <main class="page-shell">
+    <SiteNav active="blog" />
+    <article class="markdown-body">
+      <p class="eyebrow">{post.dateLabel}</p>
+      <h1>{post.title}</h1>
+      <div class="post-tags">
+        {post.tags.map((tag) => <a class="tag" href={`/tags/#${encodeURIComponent(tag)}`}>#{tag}</a>)}
+      </div>
+      <Content />
+    </article>
+  </main>
+</BaseLayout>

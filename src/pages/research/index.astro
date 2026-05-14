@@ -1,0 +1,43 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SiteNav from "@components/SiteNav.astro";
+import LogoBadge from "@components/LogoBadge.astro";
+import { publications } from "@data/publications";
+---
+
+<BaseLayout title="Research | Xueshen Liu">
+  <main class="page-shell">
+    <SiteNav active="research" />
+    <section class="smi-shell">
+      <div class="hero-topline">
+        <span>XUESHEN-SMI 1.0</span>
+        <span>{publications.length} kernels loaded</span>
+      </div>
+      <div class="smi-frame">
+        <p class="eyebrow">Library Modules</p>
+        <h1>Research & Projects</h1>
+        <p class="intro">
+          Work across LLM serving, GPU kernels, heterogeneous MoE training, elastic RL systems, KV-cache runtime design, and irregular GPU workloads.
+        </p>
+      </div>
+    </section>
+
+    <section class="publication-list" style="margin-top: 16px;">
+      {publications.map((pub, index) => (
+        <article class="publication-card">
+          <LogoBadge badge={pub.badge} />
+          <h2>{String(index + 1).padStart(2, "0")} / {pub.title}</h2>
+          <p><strong>{pub.venue}</strong> · {pub.authors}</p>
+          <p>{pub.summary}</p>
+          <div class="post-tags">
+            {pub.keywords.map((keyword) => <span class="tag">#{keyword}</span>)}
+          </div>
+          <div class="hero-actions">
+            {pub.paper && <a href={pub.paper}>Paper</a>}
+            {pub.code && <a href={pub.code}>Code</a>}
+          </div>
+        </article>
+      ))}
+    </section>
+  </main>
+</BaseLayout>

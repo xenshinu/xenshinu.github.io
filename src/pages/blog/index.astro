@@ -1,0 +1,50 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SiteNav from "@components/SiteNav.astro";
+import LogoBadge from "@components/LogoBadge.astro";
+import { getAllPosts } from "@lib/posts";
+
+const posts = await getAllPosts();
+---
+
+<BaseLayout title="Blog | Xueshen Liu">
+  <main class="page-shell">
+    <SiteNav active="blog" />
+    <section class="smi-shell">
+      <div class="hero-topline">
+        <span>XUESHEN-SMI 1.0</span>
+        <span>{posts.length} jobs</span>
+      </div>
+      <div class="smi-frame">
+        <p class="eyebrow">Process Archive</p>
+        <h1>Blogs</h1>
+        <p class="intro">
+          Notes on CUDA, Triton, LLM inference, profiling, DeepSpeed, clusters, and practical sandboxing.
+        </p>
+        <div class="badge-line">
+          <LogoBadge badge="cuda" />
+          <LogoBadge badge="triton" />
+          <LogoBadge badge="pytorch" />
+          <LogoBadge badge="docker" />
+        </div>
+      </div>
+    </section>
+
+    <section class="content-panel" style="margin-top: 16px;">
+      <div class="post-table">
+        {posts.map((post) => (
+          <a class="post-row" href={`/posts/${post.slug}/`}>
+            <span class="post-date">{post.dateLabel}</span>
+            <span>
+              <h2 class="post-title">{post.title}</h2>
+              <p class="post-summary">{post.summary}</p>
+              <span class="post-tags">
+                {post.tags.map((tag) => <span class="tag">#{tag}</span>)}
+              </span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,16 @@
+---
+import RedirectPage from "@components/RedirectPage.astro";
+import { getAllPosts } from "@lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  return posts.map((post) => ({
+    params: { legacySlug: post.slug },
+    props: { to: `/posts/${post.slug}/` }
+  }));
+}
+
+const { to } = Astro.props;
+---
+
+<RedirectPage to={to} title="Redirecting to post" />

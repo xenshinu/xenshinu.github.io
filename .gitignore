@@ -4,3 +4,8 @@ _site
 .jekyll-metadata
 vendor
 .backups
+node_modules
+dist
+.astro
+npm-debug.log*
+.DS_Store

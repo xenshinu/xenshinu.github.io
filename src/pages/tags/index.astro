@@ -1,0 +1,39 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SiteNav from "@components/SiteNav.astro";
+import { getTags } from "@lib/posts";
+
+const tags = await getTags();
+---
+
+<BaseLayout title="Tags | Xueshen Liu">
+  <main class="page-shell">
+    <SiteNav active="tags" />
+    <section class="smi-shell">
+      <div class="hero-topline">
+        <span>TAG-SMI</span>
+        <span>{tags.length} tags</span>
+      </div>
+      <div class="smi-frame">
+        <p class="eyebrow">Inverted Index</p>
+        <h1>Tags</h1>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      {tags.map(({ tag, posts }) => (
+        <article class="content-panel" id={tag}>
+          <h2>#{tag}</h2>
+          <div class="post-table">
+            {posts.map((post) => (
+              <a class="post-row" href={`/posts/${post.slug}/`}>
+                <span class="post-date">{post.dateLabel}</span>
+                <span>{post.title}</span>
+              </a>
+            ))}
+          </div>
+        </article>
+      ))}
+    </section>
+  </main>
+</BaseLayout>

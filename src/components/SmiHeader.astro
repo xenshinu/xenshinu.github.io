@@ -1,0 +1,56 @@
+---
+import LogoBadge from "./LogoBadge.astro";
+import { profile } from "@data/profile";
+---
+
+<section class="smi-shell hero" aria-label="Xueshen-SMI status header">
+  <div class="hero-topline">
+    <span>XUESHEN-SMI 1.0</span>
+    <span>{new Intl.DateTimeFormat("en", { weekday: "short", month: "short", day: "numeric", year: "numeric" }).format(new Date())}</span>
+  </div>
+
+  <div class="smi-frame">
+    <div class="smi-row smi-title-row">
+      <div>
+        <p class="eyebrow">Research Runtime</p>
+        <h1>{profile.name}</h1>
+        <p class="name-alt">{profile.nameAlt}</p>
+      </div>
+      <img class="avatar" src={profile.avatar} alt="Xueshen Liu profile photo" />
+    </div>
+
+    <div class="smi-grid">
+      <div class="smi-cell">
+        <span class="field">Driver version</span>
+        <strong>PhD-0.4.9</strong>
+      </div>
+      <div class="smi-cell">
+        <span class="field">Mode</span>
+        <strong>LLM infra / GPU systems</strong>
+      </div>
+      <div class="smi-cell">
+        <span class="field">Namespace</span>
+        <strong>UMICH CSE</strong>
+      </div>
+      <div class="smi-cell">
+        <span class="field">Location</span>
+        <strong>{profile.location}</strong>
+      </div>
+    </div>
+
+    <p class="intro">
+      {profile.intro}
+    </p>
+
+    <div class="badge-line" aria-label="focus stack">
+      {profile.focusBadges.map((badge) => <LogoBadge badge={badge} />)}
+    </div>
+
+    <nav class="hero-actions" aria-label="primary links">
+      <a href="/blog/">Blog</a>
+      <a href="/research/">Research</a>
+      <a href={profile.cv}>CV</a>
+      <a href={profile.github}>GitHub</a>
+    </nav>
+  </div>
+</section>

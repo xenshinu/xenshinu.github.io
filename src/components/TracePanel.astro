@@ -1,0 +1,186 @@
+---
+import { badges } from "@data/badges";
+import type { LaneTrace } from "@data/timeline";
+import { parseMonth, formatMonth } from "@lib/date";
+
+type Props = {
+  trace: LaneTrace;
+};
+
+const { trace } = Astro.props;
+
+const width = 780;
+const height = 300;
+const padding = { top: 28, right: 26, bottom: 38, left: 54 };
+const plotWidth = width - padding.left - padding.right;
+const plotHeight = height - padding.top - padding.bottom;
+const events = [...trace.events].sort((a, b) => parseMonth(a.date) - parseMonth(b.date));
+const traceEvents = events.filter((event) => event.trace !== false);
+const pathEvents = traceEvents.length ? traceEvents : events;
+const now = new Date();
+const currentMonth = now.getFullYear() * 12 + now.getMonth();
+
+const rawStartMonth = Math.min(...events.map((event) => parseMonth(event.date)));
+const rawEndMonth = Math.max(...events.map((event) => parseMonth(event.date)));
+const startMonth = Number.isFinite(rawStartMonth) ? rawStartMonth - 1 : parseMonth("2024-01");
+const endMonth = Number.isFinite(rawEndMonth) ? Math.max(rawEndMonth + 1, currentMonth) : currentMonth;
+const totalMonths = Math.max(1, endMonth - startMonth);
+const maxValue = Math.max(...pathEvents.map((event) => event.value), ...events.map((event) => event.value), 1);
+const tickSize = maxValue <= 12 ? 1 : maxValue <= 50 ? 10 : 25;
+const yMax = Math.ceil(maxValue / tickSize) * tickSize;
+const yTicks = Array.from({ length: Math.floor(yMax / tickSize) + 1 }, (_, index) => index * tickSize);
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function xForMonth(month: number) {
+  return padding.left + ((month - startMonth) / totalMonths) * plotWidth;
+}
+
+function xForDate(date: string) {
+  return xForMonth(parseMonth(date));
+}
+
+function yFor(value: number) {
+  return clamp(padding.top + plotHeight - (value / yMax) * plotHeight, padding.top, padding.top + plotHeight);
+}
+
+function markerToken(event: (typeof events)[number]) {
+  if (event.logo === "google") return "Google";
+  const badge = event.logo ? badges[event.logo] : undefined;
+  return badge?.short ?? event.kind.slice(0, 2).toUpperCase();
+}
+
+function markerWidth(token: string, markerOnly: boolean) {
+  const width = token.length * 7 + 14;
+  return clamp(width, markerOnly ? 18 : 22, 62);
+}
+
+function markerYFor(event: (typeof events)[number]) {
+  if (event.kind === "acceptance") return padding.top + plotHeight - 12;
+  return yFor(event.value);
+}
+
+function markerStemFor(markerY: number) {
+  return padding.top + plotHeight - markerY;
+}
+
+function stepPath() {
+  if (!pathEvents.length) return "";
+  const commands = [`M ${xForDate(pathEvents[0].date).toFixed(1)} ${yFor(pathEvents[0].value).toFixed(1)}`];
+
+  for (let i = 1; i < pathEvents.length; i += 1) {
+    const x = xForDate(pathEvents[i].date);
+    const prevY = yFor(pathEvents[i - 1].value);
+    const nextY = yFor(pathEvents[i].value);
+    commands.push(`L ${x.toFixed(1)} ${prevY.toFixed(1)}`);
+    commands.push(`L ${x.toFixed(1)} ${nextY.toFixed(1)}`);
+  }
+
+  const lastEvent = pathEvents.at(-1)!;
+  const lastX = xForDate(lastEvent.date);
+  const endX = xForMonth(endMonth);
+  if (endX > lastX) {
+    commands.push(`L ${endX.toFixed(1)} ${yFor(lastEvent.value).toFixed(1)}`);
+  }
+
+  return commands.join(" ");
+}
+
+function areaPath() {
+  if (!pathEvents.length) return "";
+  const baseline = padding.top + plotHeight;
+  return `${stepPath()} L ${xForMonth(endMonth).toFixed(1)} ${baseline.toFixed(1)} L ${xForDate(pathEvents[0].date).toFixed(1)} ${baseline.toFixed(1)} Z`;
+}
+
+function monthToDate(month: number) {
+  const year = Math.floor(month / 12);
+  const monthIndex = month % 12;
+  return `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+}
+
+const firstYear = Math.ceil(startMonth / 12);
+const lastYear = Math.floor(endMonth / 12);
+const tickMonths = Array.from(new Set([
+  startMonth,
+  ...Array.from({ length: Math.max(0, lastYear - firstYear + 1) }, (_, index) => (firstYear + index) * 12),
+  endMonth
+])).filter((month) => month >= startMonth && month <= endMonth);
+---
+
+<article class="trace-panel" data-panel data-lane={trace.lane} data-lane-title={trace.title}>
+  <header class="panel-head">
+    <div>
+      <h2>{trace.title}</h2>
+      <p>{trace.subtitle}</p>
+    </div>
+    <span class="panel-unit">{trace.unit}</span>
+  </header>
+
+  <div class="panel-visual">
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${trace.title} timeline`}>
+      <rect class="chart-bg" x="0" y="0" width={width} height={height} rx="4" />
+      {yTicks.map((tick) => (
+        <>
+          <line class="grid-line" x1={padding.left} x2={width - padding.right} y1={yFor(tick)} y2={yFor(tick)} />
+          <text class="axis-label" x="10" y={yFor(tick) + 4}>{tick}</text>
+        </>
+      ))}
+      {tickMonths.map((month) => (
+        <>
+          <line class="year-line" x1={xForMonth(month)} x2={xForMonth(month)} y1={padding.top} y2={padding.top + plotHeight} />
+          <text class="axis-label year" x={xForMonth(month) - 15} y={height - 11}>{formatMonth(monthToDate(month))}</text>
+        </>
+      ))}
+
+      <g class="trace-group" data-trace-id={`${trace.lane}-trace`} data-lane={trace.lane} data-title={trace.title}>
+        <path class="trace-fill" d={areaPath()} fill={trace.color} />
+        <path class="trace-line main-trace" d={stepPath()} stroke={trace.color} pathLength="1" />
+        {events.map((event) => {
+          const mx = xForDate(event.date);
+          const my = markerYFor(event);
+          const isMarkerOnly = event.trace === false;
+          const isEnd = event.kind === "end";
+          const isAcceptance = event.kind === "acceptance";
+          const token = markerToken(event);
+          const tokenWidth = markerWidth(token, isMarkerOnly);
+          return (
+            <g
+              class={`trace-marker ${isMarkerOnly ? "marker-only" : "turning-point"} ${isEnd ? "marker-end" : ""} ${isAcceptance ? "marker-axis" : ""}`}
+              transform={`translate(${mx.toFixed(1)} ${my.toFixed(1)})`}
+              data-marker
+              data-trace-id={`${trace.lane}-trace`}
+              data-lane={trace.lane}
+              data-news-id={event.id}
+              data-marker-title={event.label}
+              data-marker-date={formatMonth(event.date)}
+              data-marker-detail={event.detail}
+              data-marker-link={event.link}
+              tabindex="0"
+              role="button"
+              aria-label={event.label}
+            >
+              <line class="marker-stem" x1="0" x2="0" y1="0" y2={markerStemFor(my)} stroke={trace.color} />
+              {isEnd ? (
+                <circle class="marker-dot marker-end-dot" r="4.5" fill={trace.color} />
+              ) : (
+                <>
+                  <rect class="marker-dot" x={(-tokenWidth / 2).toFixed(1)} y={isMarkerOnly ? "-8" : "-11"} width={tokenWidth.toFixed(1)} height={isMarkerOnly ? 16 : 22} rx={isMarkerOnly ? 8 : 11} fill={trace.color} />
+                  <text class="marker-text" text-anchor="middle" y={isMarkerOnly ? 3 : 4}>{token}</text>
+                </>
+              )}
+            </g>
+          );
+        })}
+      </g>
+    </svg>
+    <aside class="marker-popover" data-marker-popover hidden>
+      <button type="button" class="popover-close" data-popover-close aria-label="Close event">x</button>
+      <p class="popover-date" data-popover-date></p>
+      <h3 data-popover-title></h3>
+      <p data-popover-detail></p>
+      <a data-popover-link href="#">Open link</a>
+    </aside>
+  </div>
+</article>

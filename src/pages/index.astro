@@ -1,0 +1,44 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SiteNav from "@components/SiteNav.astro";
+import SmiHeader from "@components/SmiHeader.astro";
+import TraceGrid from "@components/TraceGrid.astro";
+import ProcessWindow from "@components/ProcessWindow.astro";
+import LogoBadge from "@components/LogoBadge.astro";
+import { profile } from "@data/profile";
+import { publications } from "@data/publications";
+---
+
+<BaseLayout title="Xueshen Liu | XUESHEN-SMI">
+  <main class="page-shell">
+    <SiteNav active="home" />
+    <SmiHeader />
+    <ProcessWindow />
+    <TraceGrid />
+
+    <section class="content-grid">
+      <div class="content-panel">
+        <h2>Research Threads</h2>
+        <div class="publication-list">
+          {publications.slice(0, 4).map((pub) => (
+            <a class="publication-card" href="/research/">
+              <LogoBadge badge={pub.badge} compact />
+              <h3>{pub.title}</h3>
+              <p>{pub.summary}</p>
+              <div class="post-tags">
+                {pub.keywords.slice(0, 4).map((keyword) => <span class="tag">#{keyword}</span>)}
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <aside class="content-panel">
+        <h2>Runtime Stack</h2>
+        <div class="chip-list">
+          {profile.stack.map((tool) => <span class="chip">{tool}</span>)}
+        </div>
+      </aside>
+    </section>
+  </main>
+</BaseLayout>
