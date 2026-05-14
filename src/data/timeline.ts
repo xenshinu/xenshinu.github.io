@@ -303,7 +303,7 @@ export const laneTraces: LaneTrace[] = [
       {
         id: "drpt-start",
         date: "2025-10",
-        value: 98,
+        value: 110,
         ...publicationRefs("drpt"),
         duration: "Oct 2025-present",
         kind: "start",
