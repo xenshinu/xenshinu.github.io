@@ -59,11 +59,11 @@ export const laneTraces: LaneTrace[] = [
       },
       {
         id: "umich-bs",
-        date: "2020-09",
+        date: "2020-08",
         value: 72,
         label: "University of Michigan B.S. CSE",
         detail: "B.S. in Computer Science and Engineering at the University of Michigan.",
-        duration: "Sep 2020-May 2022",
+        duration: "Aug 2020-May 2022",
         kind: "education",
         logo: "umich"
       },
