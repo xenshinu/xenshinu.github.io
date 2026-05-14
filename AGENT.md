@@ -47,6 +47,7 @@ type LaneTrace = {
     logo?: string;
     link?: string;
     trace?: boolean;     // false means marker-only; it does not affect the line
+    process?: boolean;   // false hides timeline-only markers from the process window
   }>;
 };
 ```

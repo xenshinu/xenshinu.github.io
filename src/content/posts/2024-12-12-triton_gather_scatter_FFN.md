@@ -10,7 +10,7 @@ In our recent work [Learn to be efficient: Build structured sparsity in large la
 
 Unfortunately, the current Pytorch doesn't provide an efficient implementation of sparse feed-forward network. To translate the theoretical FLOPs reduction into real speedup, we need to implement a kernel by ourselves.
 
-This post is the continuation of [Efficient Gather-and-scatter Matrix Multiplication Kernel with Triton](https://xenshinu.github.io/triton_gather_scatter/). We will implement an efficient gather-and-scatter feed-forward network kernel with Triton. Click [here](#final-implementation) to jump to the final implementation code. 
+This post is the continuation of [Efficient Gather-and-scatter Matrix Multiplication Kernel with Triton](/posts/triton_gather_scatter/). We will implement an efficient gather-and-scatter feed-forward network kernel with Triton. Click [here](#final-implementation) to jump to the final implementation code. 
 
 ## Introduction
 
@@ -19,7 +19,7 @@ Feed-forward network normally consists of three operations:
 2. Activation function, and an optional element-wise multiplication (e.g. Llama).
 3. Linear transformation, mapping intermediate representation back to feature space.
 
-We've already implemented the first two operations in the previous [post]((https://xenshinu.github.io/triton_gather_scatter/)), where we solve the uncoalesced memory access problem by storing a column major matrix, however, the thing gets trickier for the third operation. 
+We've already implemented the first two operations in the previous [post](/posts/triton_gather_scatter/), where we solve the uncoalesced memory access problem by storing a column major matrix, however, the thing gets trickier for the third operation. 
 
 Here is a simple illustration of the FFN operation:
 ![image](/assets/images/blogs/2024-12-12-triton_gather_scatter_FFN/ffn_illustration.png)

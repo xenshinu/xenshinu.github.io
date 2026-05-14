@@ -4,6 +4,7 @@ export type BadgeKey =
   | "google"
   | "citadel"
   | "gm"
+  | "amd"
   | "cuda"
   | "llm"
   | "infra"
@@ -17,6 +18,7 @@ export type BadgeKey =
   | "docker"
   | "claude"
   | "nsdi"
+  | "iclr"
   | "icml"
   | "colm"
   | "neurips"
@@ -43,6 +45,7 @@ export const badges: Record<BadgeKey, Badge> = {
   google: { key: "google", label: "Google", short: "Google", tone: "blue" },
   citadel: { key: "citadel", label: "Citadel Securities", short: "CitSec", tone: "gold" },
   gm: { key: "gm", label: "General Motors", short: "GM", tone: "cyan" },
+  amd: { key: "amd", label: "AMD", short: "AMD", tone: "red" },
   cuda: { key: "cuda", label: "CUDA", short: "CUDA", tone: "green" },
   llm: { key: "llm", label: "Large Language Model", short: "LLM", tone: "orange" },
   infra: { key: "infra", label: "Infrastructure", short: "Infra", tone: "gold" },
@@ -56,6 +59,7 @@ export const badges: Record<BadgeKey, Badge> = {
   docker: { key: "docker", label: "Docker", short: "Docker", tone: "blue" },
   claude: { key: "claude", label: "Claude Code", short: "Claude", tone: "orange" },
   nsdi: { key: "nsdi", label: "NSDI", short: "NSDI", tone: "green" },
+  iclr: { key: "iclr", label: "ICLR", short: "ICLR", tone: "purple" },
   icml: { key: "icml", label: "ICML", short: "ICML", tone: "purple" },
   colm: { key: "colm", label: "COLM", short: "COLM", tone: "cyan" },
   neurips: { key: "neurips", label: "NeurIPS", short: "NIPS", tone: "purple" },

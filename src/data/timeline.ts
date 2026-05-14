@@ -16,6 +16,7 @@ export type LaneTraceEvent = {
   logo?: BadgeKey;
   link?: string;
   trace?: boolean;
+  process?: boolean;
 };
 
 export type LaneTrace = {
@@ -94,6 +95,42 @@ export const laneTraces: LaneTrace[] = [
         duration: "Sep 2022-present",
         kind: "education",
         logo: "umich"
+      },
+      {
+        id: "iclr25-reviewer",
+        date: "2024-10",
+        value: 88,
+        label: "ICLR'25 reviewer",
+        detail: "Reviewer service for ICLR 2025.",
+        duration: "Oct 2024",
+        kind: "service",
+        logo: "iclr",
+        trace: false,
+        process: false
+      },
+      {
+        id: "iclr26-reviewer",
+        date: "2025-10",
+        value: 88,
+        label: "ICLR'26 reviewer",
+        detail: "Reviewer service for ICLR 2026.",
+        duration: "Oct 2025",
+        kind: "service",
+        logo: "iclr",
+        trace: false,
+        process: false
+      },
+      {
+        id: "colm26-reviewer",
+        date: "2026-05",
+        value: 88,
+        label: "COLM'26 reviewer",
+        detail: "Reviewer service for COLM 2026.",
+        duration: "May 2026",
+        kind: "service",
+        logo: "colm",
+        trace: false,
+        process: false
       }
     ]
   },
@@ -109,7 +146,7 @@ export const laneTraces: LaneTrace[] = [
         date: "2024-05",
         value: 80,
         label: "General Motors CAV Lab",
-        detail: "Research intern on large-scale latency-tolerant positioning systems.",
+        detail: "Research intern on large-scale latency-tolerant positioning systems with Bo Yu and Fan Bai.",
         details: [
           "Designed a large-scale latency-tolerant vehicle positioning system on edge/cloud servers.",
           "Developed a deep factor graph model to handle delayed perception data while maintaining real-time responsiveness.",
@@ -119,13 +156,13 @@ export const laneTraces: LaneTrace[] = [
         kind: "job",
         logo: "gm"
       },
-      { id: "gm-end", date: "2024-08", value: 0, label: "General Motors CAV Lab", detail: "End of my internship at General Motors CAV Lab.", duration: "May-Aug 2024", kind: "end", logo: "gm" },
+      { id: "gm-end", date: "2024-08", value: 0, label: "End of internship at General Motors CAV Lab", detail: "End of my internship at General Motors CAV Lab.", duration: "May-Aug 2024", kind: "end", logo: "gm" },
       {
         id: "cse589",
         date: "2024-09",
         value: 40,
         label: "Graduate Student Instructor for CSE 589",
-        detail: "Advanced Computer Networks at the University of Michigan.",
+        detail: "GSI of Advanced Computer Networks at the University of Michigan.",
         details: [
           "Led in-class discussions and held regular office hours.",
           "Delivered a guest lecture on distributed software-defined networking.",
@@ -135,7 +172,7 @@ export const laneTraces: LaneTrace[] = [
         kind: "job",
         logo: "umich"
       },
-      { id: "cse589-end", date: "2024-12", value: 0, label: "Graduate Student Instructor for CSE 589", detail: "End of Fall 2024 CSE 589 GSI appointment.", duration: "Sep-Dec 2024", kind: "end", logo: "umich" },
+      { id: "cse589-end", date: "2024-12", value: 0, label: "End of Graduate Student Instructor for CSE 589", detail: "End of Fall 2024 CSE 589 GSI appointment.", duration: "Sep-Dec 2024", kind: "end", logo: "umich" },
       {
         id: "google-fulltime",
         date: "2025-05",
@@ -160,13 +197,14 @@ export const laneTraces: LaneTrace[] = [
         detail: "Continued part-time work with Systems Research @ Google",
         details: [
           "Wrapped up the Systems Research @ Google student researcher internship around the RLBoost NSDI'26 acceptance.",
-          "Research focus remained elastic rollout systems, preemptible resources, and heterogeneous LLM RL workloads."
+          "Extend RLBoost to heterogenous systems TPU+GPU.",
+          "Optimize LLM inference engines and weight transfer mechanism on TPU"
         ],
         duration: "Sep 2025-Mar 2026",
         kind: "job",
         logo: "google"
       },
-      { id: "google-end", date: "2026-03", value: 0, label: "Google Systems Research part-time", detail: "End of my part-time work during the academic term.", duration: "Sep 2025-Mar 2026", kind: "end", logo: "google" },
+      { id: "google-end", date: "2026-03", value: 0, label: "End of internship at Google Systems Research", detail: "End of my part-time work during the academic term.", duration: "Sep 2025-Mar 2026", kind: "end", logo: "google" },
       {
         id: "citadel-start",
         date: "2026-06",
@@ -231,9 +269,9 @@ export const laneTraces: LaneTrace[] = [
         kind: "start",
         logo: "cake"
       },
-      { id: "mm2gb-end", date: "2024-11", value: 64, label: "mm2-gb prototype completed", detail: "Main mm2-gb active project phase completed after BCB acceptance.", duration: "May 2022-Nov 2024", kind: "end", logo: "mm2gb" },
+      { id: "mm2gb-end", date: "2024-11", value: 64, label: "mm2-gb moved to background", detail: "Main mm2-gb active project phase completed after BCB acceptance.", duration: "May 2022-Nov 2024", kind: "end", logo: "mm2gb" },
       { id: "lte-neurips", date: "2024-12", value: 64, label: "LTE accepted to NeurIPS'24 Spotlight", detail: "", duration: "NeurIPS 2024", kind: "acceptance", logo: "neurips", link: "https://arxiv.org/abs/2402.06126", trace: false },
-      { id: "lte-end", date: "2025-01", value: 44, label: "LTE prototype completed", detail: "Main LTE active project phase completed after NeurIPS.", duration: "Mar 2024-Jan 2025", kind: "end", logo: "lte" },
+      { id: "lte-end", date: "2025-01", value: 44, label: "LTE moved to background", detail: "Main LTE active project phase completed after NeurIPS.", duration: "Mar 2024-Jan 2025", kind: "end", logo: "lte" },
       {
         id: "hetermoe-start",
         date: "2025-01",
@@ -255,9 +293,9 @@ export const laneTraces: LaneTrace[] = [
         logo: "rlboost"
       },
       { id: "cake-icml", date: "2025-05", value: 88, label: "CAKE accepted to ICML'25", detail: "", duration: "ICML 2025", kind: "acceptance", logo: "icml", link: "https://arxiv.org/abs/2410.03065", trace: false },
-      { id: "cake-end", date: "2025-06", value: 70, label: "CAKE prototype completed", detail: "Main CAKE active project phase completed after ICML acceptance.", duration: "Oct 2024-Jun 2025", kind: "end", logo: "cake" },
+      { id: "cake-end", date: "2025-06", value: 70, label: "CAKE moved to background", detail: "Main CAKE active project phase completed after ICML acceptance.", duration: "Oct 2024-Jun 2025", kind: "end", logo: "cake" },
       { id: "plato-colm", date: "2025-07", value: 88, label: "Plato accepted to COLM'25", detail: "", duration: "COLM 2025", kind: "acceptance", logo: "colm", link: "https://arxiv.org/abs/2402.12280", trace: false },
-      { id: "plato-end", date: "2025-08", value: 62, label: "Plato prototype completed", detail: "Main Plato active project phase completed after COLM acceptance.", duration: "Feb 2024-Aug 2025", kind: "end", logo: "plato" },
+      { id: "plato-end", date: "2025-08", value: 62, label: "Plato moved to background", detail: "Main Plato active project phase completed after COLM acceptance.", duration: "Feb 2024-Aug 2025", kind: "end", logo: "plato" },
       {
         id: "foundry-start",
         date: "2025-09",
@@ -269,7 +307,7 @@ export const laneTraces: LaneTrace[] = [
         logo: "foundry"
       },
       { id: "rlboost-nsdi", date: "2025-12", value: 96, label: "RLBoost accepted to NSDI'26", detail: "", duration: "NSDI 2026", kind: "acceptance", logo: "nsdi", link: "https://arxiv.org/abs/2510.19225", trace: false },
-      { id: "rlboost-end", date: "2026-01", value: 78, label: "RLBoost prototype completed", detail: "Main RLBoost active project phase completed after NSDI acceptance.", duration: "May 2025-Jan 2026", kind: "end", logo: "rlboost" },
+      { id: "rlboost-end", date: "2026-01", value: 78, label: "RLBoost moved to background", detail: "Main RLBoost active project phase completed after NSDI acceptance.", duration: "May 2025-Jan 2026", kind: "end", logo: "rlboost" },
     ]
   },
   {

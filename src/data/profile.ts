@@ -9,9 +9,11 @@ export const profile = {
   cv: "/assets/pdf/Xueshen_CV.pdf",
   email: "mailto:liuxs@umich.edu",
   github: "https://github.com/xenshinu",
+  linkedin: "https://www.linkedin.com/in/xenshinu/",
   instagram: "https://instagram.com/xenshinu.liu",
+  X: "https://x.com/Xenshinu429",
   intro:
-    "I build systems for efficient LLM training, inference, and reinforcement learning, with a focus on GPU parallel computing, CUDA graph runtimes, KV-cache systems, and elastic heterogeneous infrastructure.",
+    "I build systems for cost efficient LLM training, inference, and reinforcement learning, focusing on designing elastic infrastructure to harvest heterogeneous resources.",
   focusBadges: ["llm", "infra", "eff", "elastic", "heter"] satisfies BadgeKey[],
   stack: [
     "VeRL",
@@ -30,8 +32,10 @@ export const profile = {
     "Perfetto"
   ],
   links: [
-    { label: "Email", href: "mailto:liuxs@umich.edu" },
+    { label: "Email: liuxs AT umich.edu", href: "mailto:liuxs@umich.edu" },
     { label: "GitHub", href: "https://github.com/xenshinu" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/xenshinu/"},
+    { label: "X (Twitter)", href: "https://x.com/Xenshinu429" },
     { label: "Instagram", href: "https://instagram.com/xenshinu.liu" },
     { label: "CV", href: "/assets/pdf/Xueshen_CV.pdf" }
   ]

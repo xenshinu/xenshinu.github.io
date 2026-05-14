@@ -9,7 +9,7 @@ const rawRows = laneTraces.flatMap((trace) =>
     lane: trace.lane,
     traceTitle: trace.title
   }))
-).filter((event) => event.kind !== "end" && event.kind !== "acceptance")
+).filter((event) => event.process !== false && event.kind !== "end" && event.kind !== "acceptance")
   .sort((a, b) => b.date.localeCompare(a.date));
 
 const laneTotals = rawRows.reduce((totals, row) => {
@@ -49,13 +49,13 @@ function timeFor(item: (typeof rows)[number]) {
 <section class="process-window smi-shell" data-process-window data-active-lane={defaultLane}>
   <div class="window-bar">
     <span>PROCESS / <span data-process-title>{laneTraces[0].title}</span></span>
-    <span><span data-process-count>{rows.filter((row) => row.lane === defaultLane).length}</span> events</span>
+    <span><span data-process-count>{rows.filter((row) => row.lane === defaultLane).length}</span> workloads</span>
   </div>
   <div class="process-table" role="list">
     <div class="process-head" aria-hidden="true">
       <span>ID</span>
       <span>TIME</span>
-      <span>EVENT</span>
+      <span>WORKLOAD</span>
     </div>
     <div class="process-body">
       {rows.map((item) => (
@@ -80,7 +80,6 @@ function timeFor(item: (typeof rows)[number]) {
           </button>
           <div class="process-details" id={`process-detail-${item.id}`} hidden>
             <ul>
-              <li>Time: {formatMonth(item.date)}</li>
               {(item.details?.length ? item.details : [item.detail || item.label]).map((detail) => (
                 <li>{detail}</li>
               ))}

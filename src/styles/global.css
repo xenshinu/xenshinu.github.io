@@ -236,6 +236,20 @@ h1 {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.hero-actions .email-action {
+  color: #071007;
+  border-color: var(--green);
+  background: var(--green);
+  font-weight: 800;
+  box-shadow: 0 0 0 1px rgba(150, 208, 113, 0.18), 0 0 18px rgba(150, 208, 113, 0.18);
+}
+
+.hero-actions .email-action:hover {
+  color: #071007;
+  border-color: var(--text);
+  background: var(--text);
+}
+
 .logo-badge {
   display: inline-flex;
   align-items: center;
@@ -798,7 +812,7 @@ h1 {
 .host-process-head,
 .host-process-row {
   display: grid;
-  grid-template-columns: 52px 118px minmax(0, 1fr);
+  grid-template-columns: 52px 118px 76px minmax(0, 1fr);
   gap: 14px;
   align-items: start;
 }
@@ -819,6 +833,48 @@ h1 {
   color: var(--muted);
   font-family: var(--mono);
   font-size: 0.88rem;
+}
+
+.host-type {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-width: 52px;
+  padding: 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.host-type[data-type="talk"] {
+  color: var(--cyan);
+  border-color: rgba(155, 207, 191, 0.5);
+}
+
+.host-type[data-type="conference"] {
+  color: var(--gold);
+  border-color: rgba(210, 189, 121, 0.52);
+}
+
+.host-type[data-type="publication"] {
+  color: var(--green);
+  border-color: rgba(150, 208, 113, 0.5);
+}
+
+.host-type[data-type="role"] {
+  color: var(--purple);
+  border-color: rgba(182, 176, 216, 0.52);
+}
+
+.host-type[data-type="award"] {
+  color: var(--orange);
+  border-color: rgba(208, 166, 111, 0.52);
 }
 
 .host-process-row:hover {
@@ -1027,7 +1083,7 @@ h1 {
 
   .host-process-head,
   .host-process-row {
-    grid-template-columns: 44px 92px minmax(220px, 1fr);
+    grid-template-columns: 44px 92px 66px minmax(220px, 1fr);
   }
 
   .host-process-table {
