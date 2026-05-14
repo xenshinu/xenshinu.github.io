@@ -52,7 +52,7 @@ type LaneTrace = {
 };
 ```
 
-Blog posts live in `src/content/posts`. The route `/posts/[slug]/` is the canonical post route. Root-level legacy post slugs redirect to canonical post URLs.
+Blog posts live in `src/content/posts`. The route `/posts/[slug]/` is the canonical post route.
 
 ## Routes
 
@@ -61,7 +61,6 @@ Blog posts live in `src/content/posts`. The route `/posts/[slug]/` is the canoni
 - `/research/`: publications and projects.
 - `/tags/`: tag archive.
 - `/links/`: external links and profile links.
-- `/About/`, `/about/`, `/Blogs/`, and `/Publications/`: compatibility redirects.
 
 ## Deployment
 

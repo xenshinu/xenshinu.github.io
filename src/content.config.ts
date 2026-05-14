@@ -7,7 +7,7 @@ const posts = defineCollection({
     title: z.string(),
     date: z.union([z.string(), z.date()]),
     author_profile: z.boolean().optional(),
-    comments: z.boolean().optional(),
+    comments: z.boolean().default(true),
     tags: z.array(z.string()).default([]),
     summary: z.string().optional()
   })

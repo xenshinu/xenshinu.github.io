@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import SiteNav from "@components/SiteNav.astro";
+import UtterancesComments from "@components/UtterancesComments.astro";
 import { getAllPosts, type PostEntry } from "@lib/posts";
 import { render } from "astro:content";
 
@@ -31,5 +32,6 @@ const { Content } = await render(post.entry);
       </div>
       <Content />
     </article>
+    {post.entry.data.comments && <UtterancesComments />}
   </main>
 </BaseLayout>

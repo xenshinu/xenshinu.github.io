@@ -1017,6 +1017,23 @@ h1 {
   border: 1px solid var(--line);
 }
 
+.comments-panel {
+  max-width: 980px;
+  margin: 16px auto 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.comments-body {
+  padding: 10px 14px 16px;
+}
+
+.comments-body .utterances {
+  max-width: 100%;
+}
+
 .redirect-card {
   width: min(620px, calc(100vw - 32px));
   margin: 14vh auto 0;

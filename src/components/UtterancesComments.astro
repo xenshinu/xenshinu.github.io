@@ -1,0 +1,41 @@
+---
+type Props = {
+  repo?: string;
+  issueTerm?: string;
+  label?: string;
+  theme?: string;
+};
+
+const {
+  repo = "xenshinu/xenshinu.github.io",
+  issueTerm = "pathname",
+  label = "comment",
+  theme = "github-dark"
+} = Astro.props;
+
+function escapeAttribute(value: string) {
+  return value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
+}
+
+const utterancesScript = `
+  <script
+    src="https://utteranc.es/client.js"
+    repo="${escapeAttribute(repo)}"
+    issue-term="${escapeAttribute(issueTerm)}"
+    label="${escapeAttribute(label)}"
+    theme="${escapeAttribute(theme)}"
+    crossorigin="anonymous"
+    async>
+  </script>
+`;
+---
+
+<section class="comments-panel" aria-label="Comments">
+  <div class="window-bar">
+    <span>COMMENTS</span>
+    <span>Please share your thoughts</span>
+  </div>
+  <div class="comments-body">
+    <Fragment set:html={utterancesScript} />
+  </div>
+</section>
