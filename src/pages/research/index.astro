@@ -29,6 +29,11 @@ import { publications } from "@data/publications";
           <h2>{String(index + 1).padStart(2, "0")} / {pub.title}</h2>
           <p><strong>{pub.venue}</strong> · {pub.authors}</p>
           <p>{pub.summary}</p>
+          {pub.details?.length && (
+            <ul class="publication-details">
+              {pub.details.map((detail) => <li>{detail}</li>)}
+            </ul>
+          )}
           <div class="post-tags">
             {pub.keywords.map((keyword) => <span class="tag">#{keyword}</span>)}
           </div>

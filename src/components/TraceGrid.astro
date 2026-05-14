@@ -17,7 +17,28 @@ import { laneTraces } from "@data/timeline";
     return document.querySelector("[data-process-window]");
   }
 
-  function setActive(traceId, newsId) {
+  function findProcessRow(newsId) {
+    if (!newsId) return null;
+    return Array.from(document.querySelectorAll(".process-row[data-news-id]")).find((row) => {
+      return row.getAttribute("data-news-id") === newsId;
+    }) ?? null;
+  }
+
+  function revealProcessRow(newsId) {
+    const row = findProcessRow(newsId);
+    if (!row || row.hidden) return;
+    row.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function scrollPanelToEnd(panel) {
+    const visual = panel?.querySelector("[data-panel-visual]");
+    if (!visual) return;
+    requestAnimationFrame(() => {
+      visual.scrollLeft = visual.scrollWidth;
+    });
+  }
+
+  function setActive(traceId, newsId, options = {}) {
     document.querySelectorAll(".trace-group[data-trace-id]").forEach((node) => {
       const isActive = node.getAttribute("data-trace-id") === traceId;
       node.classList.toggle("is-active", Boolean(traceId && isActive));
@@ -28,6 +49,8 @@ import { laneTraces } from "@data/timeline";
       const activeNews = newsId && node.getAttribute("data-news-id") === newsId;
       node.classList.toggle("is-news-active", Boolean(activeNews));
     });
+
+    if (newsId && options.scrollProcess !== false) revealProcessRow(newsId);
   }
 
   function setSelectedLane(lane, title) {
@@ -43,6 +66,7 @@ import { laneTraces } from "@data/timeline";
         void panel.offsetWidth;
         requestAnimationFrame(() => {
           panel.classList.add("is-activating");
+          scrollPanelToEnd(panel);
           window.setTimeout(() => panel.classList.remove("is-activating"), 820);
         });
       }
@@ -58,7 +82,14 @@ import { laneTraces } from "@data/timeline";
       const visible = row.getAttribute("data-lane") === lane;
       row.hidden = !visible;
       if (visible) count += 1;
+      row.classList.remove("is-open");
+      row.querySelector(".process-row-toggle")?.setAttribute("aria-expanded", "false");
+      const details = row.querySelector(".process-details");
+      if (details) details.hidden = true;
     });
+
+    const processBody = processWindow?.querySelector(".process-body");
+    if (processBody) processBody.scrollTop = 0;
 
     if (processTitle) processTitle.textContent = title;
     if (processCount) processCount.textContent = String(count);
@@ -76,16 +107,32 @@ import { laneTraces } from "@data/timeline";
     });
   }
 
+  function alignProcessRowToTop(row) {
+    const body = row.closest(".process-body");
+    if (!body) return;
+
+    requestAnimationFrame(() => {
+      const bodyBounds = body.getBoundingClientRect();
+      const rowBounds = row.getBoundingClientRect();
+      body.scrollTo({
+        top: body.scrollTop + rowBounds.top - bodyBounds.top,
+        behavior: "smooth"
+      });
+    });
+  }
+
   function showMarkerPopover(marker, event) {
     const panel = marker.closest("[data-panel]");
     const popover = panel?.querySelector("[data-marker-popover]");
-    const visual = panel?.querySelector(".panel-visual");
-    if (!panel || !popover || !visual) return;
+    if (!panel || !popover) return;
 
     hidePopovers();
     popover.querySelector("[data-popover-date]").textContent = marker.getAttribute("data-marker-date") ?? "";
     popover.querySelector("[data-popover-title]").textContent = marker.getAttribute("data-marker-title") ?? "";
-    popover.querySelector("[data-popover-detail]").textContent = marker.getAttribute("data-marker-detail") ?? "";
+    const detail = marker.getAttribute("data-marker-detail") ?? "";
+    const detailNode = popover.querySelector("[data-popover-detail]");
+    detailNode.textContent = detail;
+    detailNode.hidden = !detail;
 
     const link = popover.querySelector("[data-popover-link]");
     const href = marker.getAttribute("data-marker-link");
@@ -101,22 +148,23 @@ import { laneTraces } from "@data/timeline";
     popover.style.visibility = "hidden";
     popover.hidden = false;
 
-    const bounds = visual.getBoundingClientRect();
-    const anchor = marker.querySelector(".marker-dot") ?? marker;
+    const anchor = Array.from(marker.querySelectorAll(".marker-chip, .marker-end-dot, .preview-dot, .marker-dot")).find((candidate) => {
+      const bounds = candidate.getBoundingClientRect();
+      return bounds.width > 0 || bounds.height > 0;
+    }) ?? marker;
     const markerBounds = anchor.getBoundingClientRect();
     const margin = 12;
     const gap = 14;
     const popoverWidth = popover.offsetWidth;
     const popoverHeight = popover.offsetHeight;
-    const markerX = markerBounds.left + markerBounds.width / 2 - bounds.left;
-    const markerY = markerBounds.top + markerBounds.height / 2 - bounds.top;
-    const maxX = Math.max(margin, bounds.width - popoverWidth - margin);
-    const maxY = Math.max(margin, bounds.height - popoverHeight - margin);
-    let x = markerX + gap;
-    let y = markerY + gap;
+    const panelBounds = panel.getBoundingClientRect();
+    const maxX = Math.max(margin, panelBounds.width - popoverWidth - margin);
+    const maxY = Math.max(margin, panelBounds.height - popoverHeight - margin);
+    let x = markerBounds.right - panelBounds.left + gap;
+    let y = markerBounds.bottom - panelBounds.top + gap;
 
-    if (x + popoverWidth > bounds.width - margin) x = markerX - popoverWidth - gap;
-    if (y + popoverHeight > bounds.height - margin) y = markerY - popoverHeight - gap;
+    if (x + popoverWidth > panelBounds.width - margin) x = markerBounds.left - panelBounds.left - popoverWidth - gap;
+    if (y + popoverHeight > panelBounds.height - margin) y = markerBounds.top - panelBounds.top - popoverHeight - gap;
 
     x = Math.min(Math.max(x, margin), maxX);
     y = Math.min(Math.max(y, margin), maxY);
@@ -125,7 +173,148 @@ import { laneTraces } from "@data/timeline";
     popover.style.visibility = "";
   }
 
+  function parseMonth(value) {
+    const match = String(value).match(/^(\d{4})(?:-(\d{2}))?/);
+    if (!match) return 0;
+    return Number(match[1]) * 12 + Number(match[2] ?? 1) - 1;
+  }
+
+  function monthToDate(month) {
+    const year = Math.floor(month / 12);
+    const monthIndex = month % 12;
+    return `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+  }
+
+  function formatMonth(value) {
+    const date = new Date(`${value.length === 7 ? `${value}-01` : value}T00:00:00Z`);
+    return date.toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function syncTimelineRangesToToday() {
+    const svgNs = "http://www.w3.org/2000/svg";
+    const now = new Date();
+    const todayMonth = now.getFullYear() * 12 + now.getMonth();
+    const padding = { top: 28, right: 26, bottom: 38, left: 54 };
+    const width = 780;
+    const height = 300;
+    const plotWidth = width - padding.left - padding.right;
+    const plotHeight = height - padding.top - padding.bottom;
+    const baseline = padding.top + plotHeight;
+
+    document.querySelectorAll("[data-panel]").forEach((panel) => {
+      const script = panel.querySelector("[data-chart-json]");
+      const svg = panel.querySelector("svg");
+      if (!script || !svg) return;
+
+      let chart;
+      try {
+        chart = JSON.parse(script.textContent ?? "{}");
+      } catch {
+        return;
+      }
+
+      const events = [...(chart.events ?? [])].sort((a, b) => parseMonth(a.date) - parseMonth(b.date));
+      if (!events.length) return;
+
+      const startMonth = Math.min(...events.map((event) => parseMonth(event.date))) - 1;
+      const endMonth = todayMonth;
+      const totalMonths = Math.max(1, endMonth - startMonth);
+      const maxValue = Math.max(...events.map((event) => event.value), 1);
+      const tickSize = maxValue <= 12 ? 1 : maxValue <= 50 ? 10 : 25;
+      const yMax = Math.ceil(maxValue / tickSize) * tickSize;
+
+      const xForMonth = (month) => padding.left + ((clamp(month, startMonth, endMonth) - startMonth) / totalMonths) * plotWidth;
+      const xForDate = (date) => xForMonth(parseMonth(date));
+      const yFor = (value) => clamp(padding.top + plotHeight - (value / yMax) * plotHeight, padding.top, baseline);
+      const markerYFor = (event) => event.kind === "acceptance" ? baseline - 12 : yFor(event.value);
+
+      const pathEvents = events.filter((event) => event.trace !== false && parseMonth(event.date) <= endMonth);
+      const activePathEvents = pathEvents.length ? pathEvents : events.filter((event) => event.trace !== false).slice(0, 1);
+
+      function stepPath() {
+        if (!activePathEvents.length) return "";
+        const commands = [`M ${xForDate(activePathEvents[0].date).toFixed(1)} ${yFor(activePathEvents[0].value).toFixed(1)}`];
+        for (let i = 1; i < activePathEvents.length; i += 1) {
+          const x = xForDate(activePathEvents[i].date);
+          const prevY = yFor(activePathEvents[i - 1].value);
+          const nextY = yFor(activePathEvents[i].value);
+          commands.push(`L ${x.toFixed(1)} ${prevY.toFixed(1)}`);
+          commands.push(`L ${x.toFixed(1)} ${nextY.toFixed(1)}`);
+        }
+        const lastEvent = activePathEvents.at(-1);
+        const endX = xForMonth(endMonth);
+        commands.push(`L ${endX.toFixed(1)} ${yFor(lastEvent.value).toFixed(1)}`);
+        return commands.join(" ");
+      }
+
+      const linePath = stepPath();
+      const line = svg.querySelector("[data-trace-line]");
+      const fill = svg.querySelector("[data-trace-fill]");
+      line?.setAttribute("d", linePath);
+      if (fill && activePathEvents.length) {
+        fill.setAttribute("d", `${linePath} L ${xForMonth(endMonth).toFixed(1)} ${baseline.toFixed(1)} L ${xForDate(activePathEvents[0].date).toFixed(1)} ${baseline.toFixed(1)} Z`);
+      }
+
+      svg.querySelectorAll("[data-marker]").forEach((marker) => {
+        const event = events.find((candidate) => candidate.id === marker.getAttribute("data-news-id"));
+        if (!event) return;
+        const x = xForDate(event.date);
+        const y = markerYFor(event);
+        marker.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+        marker.querySelector(".marker-stem")?.setAttribute("y2", String(baseline - y));
+      });
+
+      const firstYear = Math.ceil(startMonth / 12);
+      const lastYear = Math.floor(endMonth / 12);
+      const minCurrentLabelGap = 112;
+      const tickMonths = Array.from(new Set([
+        startMonth,
+        ...Array.from({ length: Math.max(0, lastYear - firstYear + 1) }, (_, index) => (firstYear + index) * 12),
+        endMonth
+      ])).filter((month) => month >= startMonth && month <= endMonth);
+      const shouldShowXLabel = (month) => {
+        if (month === endMonth) return true;
+        return xForMonth(endMonth) - xForMonth(month) >= minCurrentLabelGap;
+      };
+
+      const axis = svg.querySelector("[data-x-axis]");
+      if (axis) {
+        axis.replaceChildren();
+        tickMonths.forEach((month) => {
+          const group = document.createElementNS(svgNs, "g");
+          group.setAttribute("class", "x-tick");
+          const line = document.createElementNS(svgNs, "line");
+          const x = xForMonth(month);
+          line.setAttribute("class", "year-line");
+          line.setAttribute("x1", String(x));
+          line.setAttribute("x2", String(x));
+          line.setAttribute("y1", String(padding.top));
+          line.setAttribute("y2", String(baseline));
+          group.append(line);
+          if (shouldShowXLabel(month)) {
+            const text = document.createElementNS(svgNs, "text");
+            text.setAttribute("class", "axis-label year");
+            text.setAttribute("x", String(month === endMonth ? x : x - 15));
+            text.setAttribute("y", String(height - 11));
+            text.setAttribute("text-anchor", month === endMonth ? "end" : "start");
+            text.textContent = formatMonth(monthToDate(month));
+            group.append(text);
+          }
+          axis.append(group);
+        });
+      }
+
+      panel.setAttribute("data-rendered-end-month", String(endMonth));
+    });
+  }
+
   const firstPanel = root?.querySelector("[data-panel]");
+  syncTimelineRangesToToday();
+  document.querySelectorAll("[data-panel]").forEach((panel) => scrollPanelToEnd(panel));
   if (firstPanel) {
     setSelectedLane(firstPanel.getAttribute("data-lane"), firstPanel.getAttribute("data-lane-title"));
   }
@@ -145,7 +334,7 @@ import { laneTraces } from "@data/timeline";
     const target = event.target instanceof Element ? event.target.closest("[data-trace-id], [data-news-id]") : null;
     if (!target?.closest("[data-process-window]")) return;
     if (!target) return;
-    setActive(target.getAttribute("data-trace-id"), target.getAttribute("data-news-id"));
+    setActive(target.getAttribute("data-trace-id"), target.getAttribute("data-news-id"), { scrollProcess: false });
   });
 
   document.addEventListener("mouseout", (event) => {
@@ -193,5 +382,30 @@ import { laneTraces } from "@data/timeline";
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") hidePopovers();
+  });
+
+  document.addEventListener("click", (event) => {
+    const toggle = event.target instanceof Element ? event.target.closest(".process-row-toggle") : null;
+    if (!toggle) return;
+
+    const row = toggle.closest(".process-row");
+    const details = row?.querySelector(".process-details");
+    if (!row || !details) return;
+
+    event.preventDefault();
+    const shouldOpen = !row.classList.contains("is-open");
+    document.querySelectorAll(".process-row.is-open").forEach((openRow) => {
+      if (openRow === row) return;
+      openRow.classList.remove("is-open");
+      openRow.querySelector(".process-row-toggle")?.setAttribute("aria-expanded", "false");
+      const openDetails = openRow.querySelector(".process-details");
+      if (openDetails) openDetails.hidden = true;
+    });
+
+    row.classList.toggle("is-open", shouldOpen);
+    toggle.setAttribute("aria-expanded", String(shouldOpen));
+    details.hidden = !shouldOpen;
+    if (shouldOpen) alignProcessRowToTop(row);
+    setActive(row.getAttribute("data-trace-id"), row.getAttribute("data-news-id"), { scrollProcess: false });
   });
 </script>

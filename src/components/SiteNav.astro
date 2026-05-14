@@ -1,22 +1,23 @@
 ---
 type Props = {
-  active?: "home" | "blog" | "library" | "links";
+  active?: "home" | "blog" | "library" | "research" | "links" | "tags";
 };
 
 const { active = "home" } = Astro.props;
+const activeId = active === "library" ? "research" : active;
 const links = [
-  { id: "home", label: "XUESHEN-SMI", href: "/" },
+  { id: "home", label: "HOME", href: "/" },
   { id: "blog", label: "BLOG", href: "/blog/" },
-  { id: "library", label: "LIBRARY", href: "/research/" },
+  { id: "research", label: "LIBRARY", href: "/research/" },
   { id: "links", label: "LINKS", href: "/links/" }
 ];
 ---
 
 <nav class="top-nav" aria-label="site navigation">
-  <a class="brand" href="/">xueshen@runtime:~$ xueshen-smi --verbose </a>
+  <a class="brand" href="/">xueshen@runtime:~$ xueshen-smi -vvv </a>
   <div class="nav-links">
     {links.map((link) => (
-      <a href={link.href} class:list={[{ active: active === link.id }]}>{link.label}</a>
+      <a href={link.href} class:list={[{ active: activeId === link.id }]}>{link.label}</a>
     ))}
   </div>
 </nav>

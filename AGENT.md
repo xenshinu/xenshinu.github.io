@@ -15,8 +15,9 @@ This repo is an Astro + TypeScript rebuild of Xueshen Liu's personal site. The v
 - Hover/click sync matters: markers, traces, selected GPU panels, and process rows should highlight each other.
 - Do not use modal zoom windows for the trace grid. Clicking a GPU panel should expand it in place and compress the other GPU panels underneath.
 - The process window sits above the GPU panels and should show only rows for the currently selected GPU/lane.
-- Process rows should show date, duration, and event only. Do not show raw event type or trace value there.
+- Process rows should show numeric id, time, and event only. Do not show raw event type or trace value there.
 - Marker clicks should open an in-panel bubble/popover, not navigate away or open a modal.
+- The home page should not add a second research-thread section below the dashboard. Use a compact `Host Processes` news list for general updates instead.
 - Each trace panel should auto-fit its own x-axis date range and y-axis range.
 - Do not split a GPU into multiple project lines. Merge the story into one trace and use markers for role switches, starts, endings, acceptances, and posts.
 - Mobile must use tap/click reveal behavior. Do not make content hover-only.
@@ -25,6 +26,7 @@ This repo is an Astro + TypeScript rebuild of Xueshen Liu's personal site. The v
 ## Content Model
 
 Dashboard timeline data lives in `src/data/timeline.ts`. Edit `laneTraces` for the live dashboard.
+Publication start-event copy in the timeline should reuse `src/data/publications.ts` through `publicationRefs(...)`, so popover summaries and process dropdown bullets stay synced with the research page.
 
 ```ts
 type LaneTrace = {
@@ -39,6 +41,7 @@ type LaneTrace = {
     value: number;
     label: string;
     detail: string;
+    details?: string[];  // optional bullet list for process dropdowns
     duration?: string;
     kind: "start" | "end" | "release" | "acceptance" | "job" | "post" | "award" | "talk" | "service" | "education" | "paper" | "blog";
     logo?: string;
@@ -76,13 +79,15 @@ GitHub Pages must be configured to use GitHub Actions as the publishing source.
 
 ## Next Steps from user
 
-- [ ] Timeline panels always show trace up to today's month
-- [ ] only show latest 3 events in the process scroll window, when hover on the trace, it should automatically scroll to the corresponding event and highlight.
-- [ ] when hover a event in the process scroll window, highlight both the corresponding segments and turning points in the trace
-- [ ] use terminal style colors instead of pure white/black, but keep it simple, use minimum number of colors
-- [ ] in preview of panels, all event should be dots instead of rounded bars.
-- [ ] No need to show both start and end and acceptance on the process window, the process entries only include the event itself with id, duration, name, (title) and one sentence brief introduction. And if reader click it, unfold a dropdown box listing the details like mentor and information in bullet points, when click other event, fold the previous one.
-- [ ] All acceptance and end event doesn't need a details in the pop window, just keep its details empty.
-- [ ] Enable horizontal scrolling of timeline panel when it is too wide or too much events. And by default it should shows the most up to date part
-- [ ] Optimize for vertical screen or phone viewers.
-
+- [x] Timeline panels always show trace up to today's month in the browser.
+- [x] Only show the latest 3 process rows in the process viewport; marker hover scrolls to the matching process row and highlights it.
+- [x] Hovering a process row highlights the matching trace and turning point.
+- [x] Use terminal-style colors instead of pure white/black, with a minimal palette.
+- [x] In compressed panel previews, event markers render as dots instead of rounded bars.
+- [x] Process entries omit end/acceptance rows and show numeric id, time, event name, and one-sentence brief; click unfolds one detail dropdown at a time.
+- [x] Acceptance and end markers have empty popover details.
+- [x] Timeline panels scroll horizontally when the SVG is wider than the viewport and default to the most recent section.
+- [x] Add responsive behavior for vertical screens and phone viewers.
+- [x] Keep marker popovers attached to the selected trace panel and clamp them inside that panel.
+- [x] Add legacy publication bullet details to the timeline process dropdowns and research page.
+- [x] Replace the lower home-page research cards with a Host Processes news list.

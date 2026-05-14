@@ -3,15 +3,47 @@ import LogoBadge from "./LogoBadge.astro";
 import { laneTraces } from "@data/timeline";
 import { formatMonth } from "@lib/date";
 
-const rows = laneTraces.flatMap((trace) =>
+const rawRows = laneTraces.flatMap((trace) =>
   trace.events.map((event) => ({
     ...event,
     lane: trace.lane,
     traceTitle: trace.title
   }))
-).sort((a, b) => b.date.localeCompare(a.date));
+).filter((event) => event.kind !== "end" && event.kind !== "acceptance")
+  .sort((a, b) => b.date.localeCompare(a.date));
+
+const laneTotals = rawRows.reduce((totals, row) => {
+  totals.set(row.lane, (totals.get(row.lane) ?? 0) + 1);
+  return totals;
+}, new Map<string, number>());
+
+const laneSeen = new Map<string, number>();
+const rows = rawRows.map((row) => {
+  const seen = laneSeen.get(row.lane) ?? 0;
+  laneSeen.set(row.lane, seen + 1);
+  const index = (laneTotals.get(row.lane) ?? 1) - seen;
+  return {
+    ...row,
+    processId: String(index).padStart(2, "0")
+  };
+});
 
 const defaultLane = laneTraces[0].lane;
+
+function briefFor(detail: string, label: string) {
+  const clean = detail.trim();
+  if (!clean) return label;
+  const firstSentence = clean.match(/.*?[.!?](?:\s|$)/)?.[0]?.trim();
+  return firstSentence ?? clean;
+}
+
+function timeFor(item: (typeof rows)[number]) {
+  const duration = item.duration?.trim();
+  if (duration && duration !== "single post" && (duration.includes("-") || /present|spring|summer|fall|winter/i.test(duration))) {
+    return duration;
+  }
+  return formatMonth(item.date);
+}
 ---
 
 <section class="process-window smi-shell" data-process-window data-active-lane={defaultLane}>
@@ -21,28 +53,41 @@ const defaultLane = laneTraces[0].lane;
   </div>
   <div class="process-table" role="list">
     <div class="process-head" aria-hidden="true">
-      <span>DATE</span>
-      <span>DURATION</span>
+      <span>ID</span>
+      <span>TIME</span>
       <span>EVENT</span>
     </div>
     <div class="process-body">
       {rows.map((item) => (
-        <a
+        <article
           class="process-row"
           role="listitem"
-          href={item.link ?? `#${item.id}`}
           data-news-id={item.id}
           data-trace-id={`${item.lane}-trace`}
           data-lane={item.lane}
           hidden={item.lane !== defaultLane}
         >
-          <span class="mono">{formatMonth(item.date)}</span>
-          <span class="duration">{item.duration ?? "event"}</span>
-          <span class="command">
-            <LogoBadge badge={item.logo} compact />
-            {item.label}
-          </span>
-        </a>
+          <button class="process-row-toggle" type="button" aria-expanded="false" aria-controls={`process-detail-${item.id}`}>
+            <span class="mono">{item.processId}</span>
+            <span class="duration">{timeFor(item)}</span>
+            <span class="command">
+              <LogoBadge badge={item.logo} compact />
+              <span class="process-copy">
+                <strong>{item.label}</strong>
+                <span>{briefFor(item.detail, item.label)}</span>
+              </span>
+            </span>
+          </button>
+          <div class="process-details" id={`process-detail-${item.id}`} hidden>
+            <ul>
+              <li>Time: {formatMonth(item.date)}</li>
+              {(item.details?.length ? item.details : [item.detail || item.label]).map((detail) => (
+                <li>{detail}</li>
+              ))}
+            </ul>
+            {item.link && <a href={item.link}>Open link</a>}
+          </div>
+        </article>
       ))}
     </div>
   </div>

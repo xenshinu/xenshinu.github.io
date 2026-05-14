@@ -23,7 +23,7 @@ const currentMonth = now.getFullYear() * 12 + now.getMonth();
 const rawStartMonth = Math.min(...events.map((event) => parseMonth(event.date)));
 const rawEndMonth = Math.max(...events.map((event) => parseMonth(event.date)));
 const startMonth = Number.isFinite(rawStartMonth) ? rawStartMonth - 1 : parseMonth("2024-01");
-const endMonth = Number.isFinite(rawEndMonth) ? Math.max(rawEndMonth + 1, currentMonth) : currentMonth;
+const endMonth = Number.isFinite(rawEndMonth) ? Math.max(rawEndMonth, currentMonth) : currentMonth;
 const totalMonths = Math.max(1, endMonth - startMonth);
 const maxValue = Math.max(...pathEvents.map((event) => event.value), ...events.map((event) => event.value), 1);
 const tickSize = maxValue <= 12 ? 1 : maxValue <= 50 ? 10 : 25;
@@ -107,9 +107,36 @@ const tickMonths = Array.from(new Set([
   ...Array.from({ length: Math.max(0, lastYear - firstYear + 1) }, (_, index) => (firstYear + index) * 12),
   endMonth
 ])).filter((month) => month >= startMonth && month <= endMonth);
+const minCurrentLabelGap = 112;
+
+function shouldShowXLabel(month: number) {
+  if (month === endMonth) return true;
+  return xForMonth(endMonth) - xForMonth(month) >= minCurrentLabelGap;
+}
+
+function xLabelAnchor(month: number) {
+  return month === endMonth ? "end" : "start";
+}
+
+function xLabelX(month: number) {
+  return month === endMonth ? xForMonth(month) : xForMonth(month) - 15;
+}
+
+const chartData = {
+  startMonth,
+  endMonth,
+  color: trace.color,
+  events: events.map((event) => ({
+    id: event.id,
+    date: event.date,
+    value: event.value,
+    kind: event.kind,
+    trace: event.trace
+  }))
+};
 ---
 
-<article class="trace-panel" data-panel data-lane={trace.lane} data-lane-title={trace.title}>
+<article class="trace-panel" data-panel data-lane={trace.lane} data-lane-title={trace.title} data-rendered-end-month={endMonth}>
   <header class="panel-head">
     <div>
       <h2>{trace.title}</h2>
@@ -118,7 +145,7 @@ const tickMonths = Array.from(new Set([
     <span class="panel-unit">{trace.unit}</span>
   </header>
 
-  <div class="panel-visual">
+  <div class="panel-visual" data-panel-visual>
     <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${trace.title} timeline`}>
       <rect class="chart-bg" x="0" y="0" width={width} height={height} rx="4" />
       {yTicks.map((tick) => (
@@ -127,16 +154,18 @@ const tickMonths = Array.from(new Set([
           <text class="axis-label" x="10" y={yFor(tick) + 4}>{tick}</text>
         </>
       ))}
-      {tickMonths.map((month) => (
-        <>
+      <g data-x-axis>
+        {tickMonths.map((month) => (
+          <g class="x-tick">
           <line class="year-line" x1={xForMonth(month)} x2={xForMonth(month)} y1={padding.top} y2={padding.top + plotHeight} />
-          <text class="axis-label year" x={xForMonth(month) - 15} y={height - 11}>{formatMonth(monthToDate(month))}</text>
-        </>
-      ))}
+          {shouldShowXLabel(month) && <text class="axis-label year" x={xLabelX(month)} y={height - 11} text-anchor={xLabelAnchor(month)}>{formatMonth(monthToDate(month))}</text>}
+          </g>
+        ))}
+      </g>
 
       <g class="trace-group" data-trace-id={`${trace.lane}-trace`} data-lane={trace.lane} data-title={trace.title}>
-        <path class="trace-fill" d={areaPath()} fill={trace.color} />
-        <path class="trace-line main-trace" d={stepPath()} stroke={trace.color} pathLength="1" />
+        <path class="trace-fill" d={areaPath()} fill={trace.color} data-trace-fill />
+        <path class="trace-line main-trace" d={stepPath()} stroke={trace.color} pathLength="1" data-trace-line />
         {events.map((event) => {
           const mx = xForDate(event.date);
           const my = markerYFor(event);
@@ -155,8 +184,11 @@ const tickMonths = Array.from(new Set([
               data-news-id={event.id}
               data-marker-title={event.label}
               data-marker-date={formatMonth(event.date)}
-              data-marker-detail={event.detail}
+              data-marker-detail={event.kind === "end" || event.kind === "acceptance" ? "" : event.detail}
               data-marker-link={event.link}
+              data-event-date={event.date}
+              data-event-value={event.value}
+              data-event-kind={event.kind}
               tabindex="0"
               role="button"
               aria-label={event.label}
@@ -166,7 +198,8 @@ const tickMonths = Array.from(new Set([
                 <circle class="marker-dot marker-end-dot" r="4.5" fill={trace.color} />
               ) : (
                 <>
-                  <rect class="marker-dot" x={(-tokenWidth / 2).toFixed(1)} y={isMarkerOnly ? "-8" : "-11"} width={tokenWidth.toFixed(1)} height={isMarkerOnly ? 16 : 22} rx={isMarkerOnly ? 8 : 11} fill={trace.color} />
+                  <circle class="preview-dot marker-dot" r="4.5" fill={trace.color} />
+                  <rect class="marker-dot marker-chip" x={(-tokenWidth / 2).toFixed(1)} y={isMarkerOnly ? "-8" : "-11"} width={tokenWidth.toFixed(1)} height={isMarkerOnly ? 16 : 22} rx={isMarkerOnly ? 8 : 11} fill={trace.color} />
                   <text class="marker-text" text-anchor="middle" y={isMarkerOnly ? 3 : 4}>{token}</text>
                 </>
               )}
@@ -175,6 +208,7 @@ const tickMonths = Array.from(new Set([
         })}
       </g>
     </svg>
+  </div>
     <aside class="marker-popover" data-marker-popover hidden>
       <button type="button" class="popover-close" data-popover-close aria-label="Close event">x</button>
       <p class="popover-date" data-popover-date></p>
@@ -182,5 +216,5 @@ const tickMonths = Array.from(new Set([
       <p data-popover-detail></p>
       <a data-popover-link href="#">Open link</a>
     </aside>
-  </div>
+    <script type="application/json" data-chart-json is:inline set:html={JSON.stringify(chartData)}></script>
 </article>
