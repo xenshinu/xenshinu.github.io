@@ -8,7 +8,7 @@ const announcement = "Open to full-time role in 2027!!!";
 <section class="smi-shell hero" aria-label="Xueshen-SMI status header">
   <div class="hero-topline">
     <span>XUESHEN-SMI 1.0</span>
-    <span>{new Intl.DateTimeFormat("en", { weekday: "short", month: "short", day: "numeric", year: "numeric" }).format(new Date())}</span>
+    <span data-current-date aria-label="current date">Loading date...</span>
   </div>
 
   <div class="smi-frame">
@@ -61,3 +61,15 @@ const announcement = "Open to full-time role in 2027!!!";
     </nav>
   </div>
 </section>
+
+<script>
+  const currentDate = document.querySelector("[data-current-date]");
+  if (currentDate) {
+    currentDate.textContent = new Intl.DateTimeFormat("en", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    }).format(new Date());
+  }
+</script>
