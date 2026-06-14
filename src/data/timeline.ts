@@ -211,10 +211,10 @@ export const laneTraces: LaneTrace[] = [
         date: "2026-06",
         value: 98,
         label: "Citadel Securities internship",
-        detail: "Incoming Quantitative Researcher Intern at Citadel Securities in Miami",
+        detail: "Quantitative Researcher Intern at Citadel Securities in Miami",
         details: [
-          "Incoming Quantitative Researcher Intern for summer 2026.",
-          "Optimize ML infrastructures for quantitative equity analysis."
+          "Quantitative Researcher Intern at Citadel Securities in Miami.",
+          "Optimize ML systems for quantitative equity analysis."
         ],
         duration: "June 2026-Aug 2026",
         kind: "job",
