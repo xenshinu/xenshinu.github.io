@@ -226,34 +226,6 @@ h1 {
   line-height: 1.72;
 }
 
-.smi-announcement {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: fit-content;
-  max-width: 100%;
-  margin-top: 18px;
-  padding: 10px 12px;
-  border: 1px solid var(--green);
-  border-radius: var(--radius);
-  color: #071007;
-  background: var(--green);
-  box-shadow: 0 0 0 1px rgba(150, 208, 113, 0.18), 0 0 20px rgba(150, 208, 113, 0.16);
-  font-family: var(--mono);
-}
-
-.smi-announcement span {
-  padding: 3px 6px;
-  border: 1px solid rgba(7, 16, 7, 0.35);
-  border-radius: 3px;
-  font-size: 0.72rem;
-  font-weight: 900;
-}
-
-.smi-announcement strong {
-  font-size: 0.95rem;
-}
-
 .badge-line,
 .hero-actions {
   display: flex;
