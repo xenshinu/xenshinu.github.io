@@ -219,6 +219,16 @@ export const laneTraces: LaneTrace[] = [
         duration: "June 2026-Aug 2026",
         kind: "job",
         logo: "citadel"
+      },
+      {
+        id: "citadel-end",
+        date: "2026-09",
+        value: 0,
+        label: "End of internship at Citadel Securities",
+        detail: "Completed my Quantitative Researcher internship at Citadel Securities in Miami at the end of August 2026.",
+        duration: "June 2026-Aug 2026",
+        kind: "end",
+        logo: "citadel"
       }
     ]
   },
