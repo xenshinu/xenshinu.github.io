@@ -226,6 +226,50 @@ h1 {
   line-height: 1.72;
 }
 
+.smi-announcement {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 18px;
+  padding: 10px 12px;
+  border: 1px solid var(--green);
+  border-radius: var(--radius);
+  color: #071007;
+  background: var(--green);
+  box-shadow: 0 0 0 1px rgba(150, 208, 113, 0.18), 0 0 20px rgba(150, 208, 113, 0.16);
+  font-family: var(--mono);
+}
+
+.smi-announcement span {
+  flex: 0 0 auto;
+  padding: 3px 6px;
+  border: 1px solid rgba(7, 16, 7, 0.35);
+  border-radius: 3px;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.smi-announcement strong {
+  flex: 1 1 28rem;
+  min-width: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.smi-announcement a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.smi-announcement a:hover,
+.smi-announcement a:focus-visible {
+  color: #071007;
+  text-decoration-thickness: 2px;
+}
+
 .badge-line,
 .hero-actions {
   display: flex;
